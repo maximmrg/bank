@@ -11,20 +11,16 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Account {
+public class Transfert {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    private String nom;
-    private String prenom;
-    private Date birthDate;
-    private String pays;
+    @OneToOne
+    private Account compteOwner;
 
-    @Column(name = "passeport")
-    private int noPasseport;
-    private String numTel;
-    private String secret;
-    private String IBAN;
+    private Date date;
+    private String IBAN_cible;
+    private int montant;
 }
