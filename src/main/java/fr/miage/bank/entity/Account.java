@@ -22,7 +22,6 @@ public class Account {
     private Date birthDate;
     private String pays;
 
-    @Column(name = "passeport")
     private int noPasseport;
     private String numTel;
     private String secret;

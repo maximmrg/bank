@@ -1,6 +1,7 @@
 package fr.miage.bank.controller;
 
 import fr.miage.bank.entity.Account;
+import fr.miage.bank.entity.Carte;
 import fr.miage.bank.service.AccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,12 @@ public class AccountController {
         return Optional.ofNullable(accountService.findById(id)).filter(Optional::isPresent)
                 .map(i -> ResponseEntity.ok(i.get()))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping(value = "/{accountId}/cartes")
+    public ResponseEntity<?> getAllCartes(@PathVariable("accountId") Long id){
+        Iterable<Carte> allCartes = accountService.findAllCartes(id);
+        return ResponseEntity.ok(allCartes);
     }
 
 }
