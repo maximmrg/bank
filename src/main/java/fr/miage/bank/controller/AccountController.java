@@ -83,11 +83,7 @@ public class AccountController {
     }
 
 
-    @GetMapping(value = "/{accountId}/cartes")
-    public ResponseEntity<?> getAllCartes(@PathVariable("accountId") String id){
-        Iterable<Carte> allCartes = accountService.findAllCartes(id);
-        return ResponseEntity.ok(allCartes);
-    }
+
 
     @GetMapping(value = "/{accountId}/operations")
     public ResponseEntity<?> getAllOperations(@PathVariable("accountId") String id){
