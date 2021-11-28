@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class Carte {
     @Id
     @Column(name = "id", nullable = false)
-    private Long id;
+    private String id;
 
     private int code;
     private int crypto;

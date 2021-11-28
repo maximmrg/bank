@@ -16,7 +16,7 @@ public class Operation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private String id;
 
     private Date date;
     private Date heure;
@@ -27,6 +27,7 @@ public class Operation {
     private String IBAN_crediteur;
     private String nomCrediteur;
 
+    @JoinColumn
     @OneToOne
     private Account compteOwner;
 
