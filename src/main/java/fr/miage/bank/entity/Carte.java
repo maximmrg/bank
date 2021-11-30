@@ -12,6 +12,7 @@ import javax.persistence.*;
 @Setter
 public class Carte {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private String id;
 

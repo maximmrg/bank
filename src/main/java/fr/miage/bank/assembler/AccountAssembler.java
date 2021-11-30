@@ -25,7 +25,7 @@ public class AccountAssembler implements RepresentationModelAssembler<Account, E
                 linkTo(methodOn(AccountController.class)
                         .getAllAccounts()).withRel("collection"),
                 linkTo(methodOn(CarteController.class)
-                        .getAllCartes(entity.getId())).withRel("allCartes"));
+                        .getAllCartesByAccountId(entity.getId())).withRel("allCartes"));
     }
 
     @Override

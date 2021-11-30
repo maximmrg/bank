@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping(value = "/accounts/{accountId}/cartes")
 public class CarteController {
@@ -21,8 +23,15 @@ public class CarteController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllCartes(@PathVariable("accountId") String id){
-        Iterable<Carte> allCartes = carteServices.findAllCartes(id);
+    public ResponseEntity<?> getAllCartesByAccountId(@PathVariable("accountId") String accountId){
+        Iterable<Carte> allCartes = carteServices.findAllCartesByAccountId(accountId);
         return ResponseEntity.ok(assembler.toCollectionModel(allCartes));
+    }
+
+    @GetMapping(value = "/{carteId}")
+    public ResponseEntity<?> getOneCarteByIdAndAccountId(@PathVariable("accountId") String accountId, @PathVariable("carteId") String carteId){
+        return Optional.ofNullable(carteServices.findByIdAndAccountId(carteId, accountId)).filter(Optional::isPresent)
+                .map(i -> ResponseEntity.ok(assembler.toModel(i.get())))
+                .orElse(ResponseEntity.notFound().build());
     }
 }
