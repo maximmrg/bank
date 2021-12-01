@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CarteServices {
+public class CarteService {
 
     private final CarteRepository cRepository;
 
@@ -19,5 +19,9 @@ public class CarteServices {
 
     public Optional<Carte> findByIdAndAccountId(String carteId, String accountId){
         return cRepository.findByIdAndAccount_Id(carteId, accountId);
+    }
+
+    public Carte createCarte(Carte carte){
+        return cRepository.save(carte);
     }
 }

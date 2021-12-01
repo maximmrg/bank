@@ -11,6 +11,9 @@ import javax.persistence.*;
 @Getter
 @Setter
 public class Carte {
+
+    private static final long serialVersionUID = 765432234567L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

@@ -1,20 +1,22 @@
 package fr.miage.bank.controller;
 
 import fr.miage.bank.assembler.AccountAssembler;
-import fr.miage.bank.entity.Account;
-import fr.miage.bank.entity.AccountInput;
-import fr.miage.bank.entity.Carte;
-import fr.miage.bank.entity.Operation;
+import fr.miage.bank.entity.*;
 import fr.miage.bank.service.AccountService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.Optional;
-import java.util.UUID;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.*;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -24,10 +26,12 @@ public class AccountController {
 
     private final AccountService accountService;
     private final AccountAssembler assembler;
+    private final AccountValidator validator;
 
-    public AccountController(AccountService accountService, AccountAssembler assembler) {
+    public AccountController(AccountService accountService, AccountAssembler assembler, AccountValidator validator) {
         this.accountService = accountService;
         this.assembler = assembler;
+        this.validator = validator;
     }
 
     @GetMapping
@@ -82,21 +86,39 @@ public class AccountController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping(value = "/{accountId}")
+    @Transactional
+    public ResponseEntity<?> updateAccountPartiel(@PathVariable("accountId") String accountId,
+                                                  @RequestBody Map<Object, Object> fields) {
 
+        Optional<Account> body = accountService.findById(accountId);
 
+        if(body.isPresent()) {
+            Account account = body.get();
 
-    @GetMapping(value = "/{accountId}/operations")
-    public ResponseEntity<?> getAllOperations(@PathVariable("accountId") String id){
-        Iterable<Operation> allOperations = accountService.findAllOperations(id);
-        return ResponseEntity.ok(allOperations);
-    }
+            fields.forEach((f,v) -> {
+                Field field = ReflectionUtils.findField(Account.class, f.toString());
+                field.setAccessible(true);
 
-    @GetMapping(value = "/{accountId}/operations/{operationId}")
-    public ResponseEntity<?> getOperationById(@PathVariable("accountId") String accountId, @PathVariable("operationId") String operationId ){
+                if(field.getType() == Date.class){
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.FRENCH);
+                    try {
+                        ReflectionUtils.setField(field, account, formatter.parse(v.toString()));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    ReflectionUtils.setField(field, account, v);
+                }
+            });
 
-        return Optional.ofNullable(accountService.findOperationById(operationId)).filter(Optional::isPresent)
-                .map(i -> ResponseEntity.ok(i.get()))
-                .orElse(ResponseEntity.notFound().build());
+            validator.validate(new AccountInput(account.getNom(), account.getPrenom(), account.getBirthDate(), account.getPays(),
+                    account.getNoPasseport(), account.getNumTel(), account.getSecret(), account.getIban()));
+            account.setId(accountId);
+            accountService.updateAccount(account);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
 }

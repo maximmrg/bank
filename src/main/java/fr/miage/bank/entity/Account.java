@@ -14,6 +14,9 @@ import java.util.Date;
 @Getter
 @Setter
 public class Account implements Serializable {
+
+    private static final long serialVersionUID = 765432234567L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -27,5 +30,5 @@ public class Account implements Serializable {
     private String noPasseport;
     private String numTel;
     private String secret;
-    private String IBAN;
+    private String iban;
 }
