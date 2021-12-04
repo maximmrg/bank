@@ -2,6 +2,7 @@ package fr.miage.bank.assembler;
 
 import fr.miage.bank.controller.AccountController;
 import fr.miage.bank.controller.CarteController;
+import fr.miage.bank.controller.OperationController;
 import fr.miage.bank.entity.Account;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -25,7 +26,8 @@ public class AccountAssembler implements RepresentationModelAssembler<Account, E
                 linkTo(methodOn(AccountController.class)
                         .getAllAccounts()).withRel("collection"),
                 linkTo(methodOn(CarteController.class)
-                        .getAllCartesByAccountId(entity.getId())).withRel("allCartes"));
+                        .getAllCartesByAccountId(entity.getId())).withRel("cartes"),
+                linkTo(methodOn(OperationController.class).getAllOperationsByAccountId(entity.getId())).withRel("operations"));
     }
 
     @Override

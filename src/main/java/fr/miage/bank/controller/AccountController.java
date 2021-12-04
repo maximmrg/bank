@@ -5,6 +5,7 @@ import fr.miage.bank.entity.*;
 import fr.miage.bank.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ import java.util.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
+@ExposesResourceFor(Account.class)
 @RequestMapping(value = "/accounts")
 public class AccountController {
 

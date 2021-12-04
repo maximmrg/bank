@@ -5,6 +5,8 @@ import fr.miage.bank.repository.OperationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class OperationService {
@@ -13,5 +15,9 @@ public class OperationService {
 
     public Iterable<Operation> findAllOperationsByAccountId(String accountId){
         return oRepository.findAllByCompteOwner_Id(accountId);
+    }
+
+    public Optional<Operation> findByIdAndCompteOwnerId(String operationId, String accountId){
+        return oRepository.findByIdAndAndCompteOwner_Id(operationId, accountId);
     }
 }

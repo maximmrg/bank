@@ -1,6 +1,7 @@
 package fr.miage.bank.assembler;
 
 import fr.miage.bank.controller.AccountController;
+import fr.miage.bank.controller.CarteController;
 import fr.miage.bank.entity.Carte;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -15,6 +16,8 @@ public class CarteAssembler implements RepresentationModelAssembler<Carte, Entit
     @Override
     public EntityModel<Carte> toModel(Carte entity) {
         return EntityModel.of(entity,
+                linkTo(methodOn(CarteController.class)
+                        .getOneCarteByIdAndAccountId(entity.getAccount().getId(), entity.getId())).withSelfRel(),
                 linkTo(methodOn(AccountController.class)
                         .getOneAccountById(entity.getAccount().getId())).withRel("account"));
     }
