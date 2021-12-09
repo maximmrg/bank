@@ -22,15 +22,6 @@ public class AccountInput {
     private String IBAN;
 
     @NotNull
-    private String nom;
-
-    @Size(min = 2)
-    private String prenom;
-
-    @NotNull
-    private Date birthDate;
-
-    @NotNull
     private String pays;
 
     @Size(min = 5)
@@ -41,7 +32,6 @@ public class AccountInput {
 
     @Size(min = 5, max = 10)
     private String secret;
-
 
     private double solde;
 

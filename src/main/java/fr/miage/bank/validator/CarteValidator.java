@@ -1,6 +1,6 @@
 package fr.miage.bank.validator;
 
-import fr.miage.bank.entity.CarteInput;
+import fr.miage.bank.input.CarteInput;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;

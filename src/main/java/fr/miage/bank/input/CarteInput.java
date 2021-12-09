@@ -1,4 +1,4 @@
-package fr.miage.bank.entity;
+package fr.miage.bank.input;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

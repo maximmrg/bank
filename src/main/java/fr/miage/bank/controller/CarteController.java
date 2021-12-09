@@ -3,24 +3,20 @@ package fr.miage.bank.controller;
 import fr.miage.bank.assembler.CarteAssembler;
 import fr.miage.bank.entity.Account;
 import fr.miage.bank.entity.Carte;
-import fr.miage.bank.entity.CarteInput;
+import fr.miage.bank.input.CarteInput;
 import fr.miage.bank.service.AccountService;
 import fr.miage.bank.service.CarteService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequiredArgsConstructor

@@ -18,4 +18,11 @@ public class UserService {
     public Optional<User> findById(String userId){
         return uRepository.findById(userId);
     }
+
+    public boolean existById(String id) {return uRepository.existsById(id);}
+
+    public User createUser(User user) {return uRepository.save(user);}
+
+    public User updateUser(User user) {return uRepository.save(user);}
+
 }

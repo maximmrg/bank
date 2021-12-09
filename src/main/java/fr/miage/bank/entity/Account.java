@@ -20,9 +20,6 @@ public class Account implements Serializable {
     @Id
     private String iban;
 
-    private String nom;
-    private String prenom;
-    private Date birthDate;
     private String pays;
 
     private String noPasseport;

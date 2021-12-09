@@ -60,9 +60,6 @@ public class AccountController {
 
         Account account2save = new Account(
                 account.getIBAN(),
-                account.getNom(),
-                account.getPrenom(),
-                account.getBirthDate(),
                 account.getPays(),
                 account.getNoPasseport(),
                 account.getNumTel(),
@@ -121,7 +118,7 @@ public class AccountController {
                 }
             });
 
-            validator.validate(new AccountInput(account.getIban(), account.getNom(), account.getPrenom(), account.getBirthDate(), account.getPays(),
+            validator.validate(new AccountInput(account.getIban(), account.getPays(),
                     account.getNoPasseport(), account.getNumTel(), account.getSecret(), account.getSolde(), account.getOwner().getId()));
             account.setIban(accountIban);
             accountService.updateAccount(account);
