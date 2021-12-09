@@ -2,9 +2,11 @@ package fr.miage.bank.controller;
 
 import fr.miage.bank.assembler.AccountAssembler;
 import fr.miage.bank.entity.*;
+import fr.miage.bank.input.AccountInput;
 import fr.miage.bank.service.AccountService;
+import fr.miage.bank.service.UserService;
+import fr.miage.bank.validator.AccountValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ReflectionUtils;
@@ -16,7 +18,6 @@ import java.lang.reflect.Field;
 import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.*;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -27,11 +28,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 public class AccountController {
 
     private final AccountService accountService;
+    private final UserService userService;
     private final AccountAssembler assembler;
     private final AccountValidator validator;
 
-    public AccountController(AccountService accountService, AccountAssembler assembler, AccountValidator validator) {
+    public AccountController(AccountService accountService, UserService userService, AccountAssembler assembler, AccountValidator validator) {
         this.accountService = accountService;
+        this.userService = userService;
         this.assembler = assembler;
         this.validator = validator;
     }
@@ -52,8 +55,11 @@ public class AccountController {
     @PostMapping
     @Transactional
     public ResponseEntity<?> saveAccount(@RequestBody @Valid AccountInput account){
+
+        Optional<User> optionUser = userService.findById(account.getUserId());
+
         Account account2save = new Account(
-                UUID.randomUUID().toString(),
+                account.getIBAN(),
                 account.getNom(),
                 account.getPrenom(),
                 account.getBirthDate(),
@@ -61,39 +67,40 @@ public class AccountController {
                 account.getNoPasseport(),
                 account.getNumTel(),
                 account.getSecret(),
-                account.getIBAN()
+                account.getSolde(),
+                optionUser.get()
         );
 
         Account saved = accountService.createAccount(account2save);
 
-        URI location = linkTo(AccountController.class).slash(saved.getId()).toUri();
+        URI location = linkTo(AccountController.class).slash(saved.getIban()).toUri();
         return ResponseEntity.created(location).build();
     }
 
     @PutMapping(value = "/{accountId}")
     @Transactional
-    public ResponseEntity<?> updateAccount(@RequestBody Account account, @PathVariable("accountId") String accountId){
+    public ResponseEntity<?> updateAccount(@RequestBody Account account, @PathVariable("accountId") String accountIban){
         Optional<Account> body = Optional.ofNullable(account);
 
         if(!body.isPresent()) {
             return ResponseEntity.badRequest().build();
         }
 
-        if(!accountService.existById(accountId)){
+        if(!accountService.existById(accountIban)){
             return ResponseEntity.notFound().build();
         }
 
-        account.setId(accountId);
+        account.setIban(accountIban);
         Account result = accountService.updateAccount(account);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping(value = "/{accountId}")
     @Transactional
-    public ResponseEntity<?> updateAccountPartiel(@PathVariable("accountId") String accountId,
+    public ResponseEntity<?> updateAccountPartiel(@PathVariable("accountId") String accountIban,
                                                   @RequestBody Map<Object, Object> fields) {
 
-        Optional<Account> body = accountService.findById(accountId);
+        Optional<Account> body = accountService.findById(accountIban);
 
         if(body.isPresent()) {
             Account account = body.get();
@@ -114,9 +121,9 @@ public class AccountController {
                 }
             });
 
-            validator.validate(new AccountInput(account.getNom(), account.getPrenom(), account.getBirthDate(), account.getPays(),
-                    account.getNoPasseport(), account.getNumTel(), account.getSecret(), account.getIban()));
-            account.setId(accountId);
+            validator.validate(new AccountInput(account.getIban(), account.getNom(), account.getPrenom(), account.getBirthDate(), account.getPays(),
+                    account.getNoPasseport(), account.getNumTel(), account.getSecret(), account.getSolde(), account.getOwner().getId()));
+            account.setIban(accountIban);
             accountService.updateAccount(account);
             return ResponseEntity.ok().build();
         }

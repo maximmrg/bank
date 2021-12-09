@@ -1,7 +1,6 @@
 package fr.miage.bank.service;
 
 import fr.miage.bank.entity.Account;
-import fr.miage.bank.entity.AccountInput;
 import fr.miage.bank.entity.Carte;
 import fr.miage.bank.entity.Operation;
 import fr.miage.bank.repository.AccountRepository;
@@ -41,11 +40,11 @@ public class AccountService {
     }
 
     public Iterable<Carte> findAllCartes(String id){
-        return cRepository.findAllByAccount_Id(id);
+        return cRepository.findAllByAccount_Iban(id);
     }
 
     public Iterable<Operation> findAllOperations(String id){
-        return oRepository.findAllByCompteOwner_Id(id);
+        return oRepository.findAllByCompteCrediteur_Iban(id);
     }
 
     public Optional<Operation> findOperationById(String id){

@@ -22,12 +22,12 @@ public class AccountAssembler implements RepresentationModelAssembler<Account, E
     public EntityModel<Account> toModel(Account entity) {
         return EntityModel.of(entity,
                 linkTo(methodOn(AccountController.class)
-                        .getOneAccountById(entity.getId())).withSelfRel(),
+                        .getOneAccountById(entity.getIban())).withSelfRel(),
                 linkTo(methodOn(AccountController.class)
                         .getAllAccounts()).withRel("collection"),
                 linkTo(methodOn(CarteController.class)
-                        .getAllCartesByAccountId(entity.getId())).withRel("cartes"),
-                linkTo(methodOn(OperationController.class).getAllOperationsByAccountId(entity.getId())).withRel("operations"));
+                        .getAllCartesByAccountId(entity.getIban())).withRel("cartes"),
+                linkTo(methodOn(OperationController.class).getAllOperationsByAccountId(entity.getIban())).withRel("operations"));
     }
 
     @Override

@@ -14,7 +14,7 @@ public class CarteService {
     private final CarteRepository cRepository;
 
     public Iterable<Carte> findAllCartesByAccountId(String accountId){
-        return cRepository.findAllByAccount_Id(accountId);
+        return cRepository.findAllByAccount_Iban(accountId);
     }
 
     public boolean existById(String id){
@@ -22,7 +22,7 @@ public class CarteService {
     }
 
     public Optional<Carte> findByIdAndAccountId(String carteId, String accountId){
-        return cRepository.findByIdAndAccount_Id(carteId, accountId);
+        return cRepository.findByIdAndAccount_Iban(carteId, accountId);
     }
 
     public Carte createCarte(Carte carte){

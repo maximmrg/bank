@@ -23,10 +23,11 @@ public class Carte {
     private int crypto;
     private boolean bloque;
     private boolean localisation;
-    private int plafond;
+    private double plafond;
     private boolean sansContact;
     private boolean virtual;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private Account account;
 }

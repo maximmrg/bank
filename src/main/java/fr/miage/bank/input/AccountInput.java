@@ -1,4 +1,4 @@
-package fr.miage.bank.entity;
+package fr.miage.bank.input;
 
 import com.sun.istack.NotNull;
 
@@ -6,17 +6,20 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.Date;
 
 @Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountInput {
+
+    @Size(min = 3)
+    private String IBAN;
 
     @NotNull
     private String nom;
@@ -39,6 +42,10 @@ public class AccountInput {
     @Size(min = 5, max = 10)
     private String secret;
 
-    @Size(min = 3)
-    private String IBAN;
+
+    private double solde;
+
+    private String UserId;
+
+
 }

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface CarteRepository extends JpaRepository<Carte, String> {
-    public Iterable<Carte> findAllByAccount_Id(String id);
+    public Iterable<Carte> findAllByAccount_Iban(String id);
 
-    public Optional<Carte> findByIdAndAccount_Id(String carteId, String accountId);
+    public Optional<Carte> findByIdAndAccount_Iban(String carteId, String accountId);
 }

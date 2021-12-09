@@ -4,6 +4,8 @@ import lombok.*;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity
@@ -12,25 +14,22 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Operation {
+public class Operation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private String id;
 
-    private Date date;
-    private Date heure;
+    private Timestamp date;
     private String libelle;
     private double montant;
     private double taux;
 
-    private String IBAN_crediteur;
+    @ManyToOne
+    @JoinColumn(name = "creditor_account_iban")
+    private Account compteCrediteur;
+
     private String nomCrediteur;
-
-    @JoinColumn
-    @OneToOne
-    private Account compteOwner;
-
 
     private String categ;
     private String pays;

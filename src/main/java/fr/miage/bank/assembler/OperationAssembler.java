@@ -16,7 +16,7 @@ public class OperationAssembler implements RepresentationModelAssembler<Operatio
     public EntityModel<Operation> toModel(Operation entity) {
         return EntityModel.of(entity,
                 linkTo(methodOn(AccountController.class)
-                        .getOneAccountById(entity.getCompteOwner().getId())).withRel("account"));
+                        .getOneAccountById(entity.getCompteCrediteur().getIban())).withRel("account"));
     }
 
     @Override

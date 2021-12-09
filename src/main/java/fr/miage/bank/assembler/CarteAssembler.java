@@ -17,9 +17,9 @@ public class CarteAssembler implements RepresentationModelAssembler<Carte, Entit
     public EntityModel<Carte> toModel(Carte entity) {
         return EntityModel.of(entity,
                 linkTo(methodOn(CarteController.class)
-                        .getOneCarteByIdAndAccountId(entity.getAccount().getId(), entity.getId())).withSelfRel(),
+                        .getOneCarteByIdAndAccountId(entity.getAccount().getIban(), entity.getId())).withSelfRel(),
                 linkTo(methodOn(AccountController.class)
-                        .getOneAccountById(entity.getAccount().getId())).withRel("account"));
+                        .getOneAccountById(entity.getAccount().getIban())).withRel("account"));
     }
 
     @Override

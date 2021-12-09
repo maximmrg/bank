@@ -15,12 +15,10 @@ import java.util.Date;
 @Setter
 public class Account implements Serializable {
 
-    private static final long serialVersionUID = 765432234567L;
+    private static final long serialVersionUID = 454854941848L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private String id;
+    private String iban;
 
     private String nom;
     private String prenom;
@@ -30,5 +28,10 @@ public class Account implements Serializable {
     private String noPasseport;
     private String numTel;
     private String secret;
-    private String iban;
+
+    private double solde;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User owner;
 }
