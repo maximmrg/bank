@@ -29,7 +29,4 @@ public class AccountInput {
 
     private double solde;
 
-    private String UserId;
-
-
 }

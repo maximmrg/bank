@@ -85,4 +85,15 @@ public class CarteController {
 
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping(value = "/{carteId}")
+    @Transactional
+    public ResponseEntity<?> deleteCarte(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @PathVariable("carteId") String carteId){
+        Optional<Carte> carte = carteService.findByIdAndAccountId(carteId, accountIban);
+        if(carte.isPresent()){
+            carteService.deleteCarte(carte.get());
+        }
+
+        return ResponseEntity.noContent().build();
+    }
 }

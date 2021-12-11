@@ -32,4 +32,8 @@ public class CarteService {
     public Carte updateCarte(Carte carte){
         return cRepository.save(carte);
     }
+
+    public void deleteCarte(Carte carte){
+        cRepository.delete(carte);
+    }
 }

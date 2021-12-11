@@ -68,8 +68,10 @@ public class AccountController {
 
         Account saved = accountService.createAccount(account2save);
 
-        URI location = linkTo(AccountController.class).slash(saved.getIban()).toUri();
-        return ResponseEntity.created(location).build();
+        //URI location = linkTo(AccountController.class).slash(saved.getIban()).toUri();
+        //return ResponseEntity.created(location).build();
+
+        return ResponseEntity.ok(saved);
     }
 
     @PutMapping(value = "/{accountId}")
@@ -117,7 +119,7 @@ public class AccountController {
             });
 
             validator.validate(new AccountInput(account.getIban(), account.getPays(),
-                    account.getSecret(), account.getSolde(), account.getUser().getId()));
+                    account.getSecret(), account.getSolde()));
             account.setIban(accountIban);
             accountService.updateAccount(account);
             return ResponseEntity.ok().build();
