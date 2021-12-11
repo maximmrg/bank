@@ -15,11 +15,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class CarteAssembler implements RepresentationModelAssembler<Carte, EntityModel<Carte>> {
     @Override
     public EntityModel<Carte> toModel(Carte entity) {
+        String userId = entity.getAccount().getUser().getId();
         return EntityModel.of(entity,
                 linkTo(methodOn(CarteController.class)
-                        .getOneCarteByIdAndAccountId(entity.getAccount().getIban(), entity.getId())).withSelfRel(),
+                        .getOneCarteByIdAndAccountId(userId, entity.getAccount().getIban(), entity.getId())).withSelfRel(),
                 linkTo(methodOn(AccountController.class)
-                        .getOneAccountById(entity.getAccount().getIban())).withRel("account"));
+                        .getOneAccountById(userId, entity.getAccount().getIban())).withRel("account"));
     }
 
     @Override

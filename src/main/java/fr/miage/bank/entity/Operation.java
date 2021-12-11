@@ -26,10 +26,14 @@ public class Operation implements Serializable {
     private double taux;
 
     @ManyToOne
+    @JoinColumn(name = "debitor_account_iban")
+    private Account compteDebiteur;
+
+    @ManyToOne
     @JoinColumn(name = "creditor_account_iban")
     private Account compteCrediteur;
 
-    private String nomCrediteur;
+    //private String nomCrediteur;
 
     private String categ;
     private String pays;

@@ -1,5 +1,6 @@
 package fr.miage.bank.assembler;
 
+import fr.miage.bank.controller.AccountController;
 import fr.miage.bank.controller.UserController;
 import fr.miage.bank.entity.User;
 import org.springframework.hateoas.CollectionModel;
@@ -20,7 +21,8 @@ public class UserAssembler implements RepresentationModelAssembler<User, EntityM
     public EntityModel<User> toModel(User entity) {
         return EntityModel.of(entity,
                 linkTo(methodOn(UserController.class)
-                        .getOneUserById(entity.getId())).withSelfRel());
+                        .getOneUserById(entity.getId())).withSelfRel(),
+                linkTo(methodOn(AccountController.class).getAllAccountsByUserId(entity.getId())).withRel("accounts"));
     }
 
     @Override

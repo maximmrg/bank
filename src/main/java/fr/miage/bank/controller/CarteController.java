@@ -20,7 +20,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/accounts/{accountId}/cartes")
+@RequestMapping(value = "users/{userId}/accounts/{accountId}/cartes")
 @ExposesResourceFor(Carte.class)
 public class CarteController {
     private final CarteService carteService;
@@ -28,13 +28,13 @@ public class CarteController {
     private final CarteAssembler assembler;
 
     @GetMapping
-    public ResponseEntity<?> getAllCartesByAccountId(@PathVariable("accountId") String accountId){
+    public ResponseEntity<?> getAllCartesByAccountId(@PathVariable("userId") String userId, @PathVariable("accountId") String accountId){
         Iterable<Carte> allCartes = carteService.findAllCartesByAccountId(accountId);
         return ResponseEntity.ok(assembler.toCollectionModel(allCartes));
     }
 
     @GetMapping(value = "/{carteId}")
-    public ResponseEntity<?> getOneCarteByIdAndAccountId(@PathVariable("accountId") String accountId, @PathVariable("carteId") String carteId){
+    public ResponseEntity<?> getOneCarteByIdAndAccountId(@PathVariable("userId") String userId, @PathVariable("accountId") String accountId, @PathVariable("carteId") String carteId){
         return Optional.ofNullable(carteService.findByIdAndAccountId(carteId, accountId)).filter(Optional::isPresent)
                 .map(i -> ResponseEntity.ok(assembler.toModel(i.get())))
                 .orElse(ResponseEntity.notFound().build());
@@ -42,7 +42,7 @@ public class CarteController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<?> createCarte(@RequestBody @Valid CarteInput carte, @PathVariable("accountId") String accountId){
+    public ResponseEntity<?> createCarte(@RequestBody @Valid CarteInput carte, @PathVariable("userId") String userId, @PathVariable("accountId") String accountId){
         Optional<Account> optionalAccount = accountService.findById(accountId);
 
         Account account = optionalAccount.get();

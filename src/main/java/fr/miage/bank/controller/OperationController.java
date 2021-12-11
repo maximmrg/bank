@@ -10,7 +10,7 @@ import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/accounts/{accountId}/operations")
+@RequestMapping(value = "users/{userId}/accounts/{accountId}/operations")
 public class OperationController {
     private final OperationService operationService;
     private final OperationAssembler assembler;

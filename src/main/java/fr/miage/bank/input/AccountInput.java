@@ -24,12 +24,6 @@ public class AccountInput {
     @NotNull
     private String pays;
 
-    @Size(min = 5)
-    private String noPasseport;
-
-    @Size(min = 10, max = 10)
-    private String numTel;
-
     @Size(min = 5, max = 10)
     private String secret;
 

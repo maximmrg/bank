@@ -18,27 +18,34 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class AccountAssembler implements RepresentationModelAssembler<Account, EntityModel<Account>> {
+
+
     @Override
     public EntityModel<Account> toModel(Account entity) {
+        String userId = entity.getUser().getId();
         return EntityModel.of(entity,
                 linkTo(methodOn(AccountController.class)
-                        .getOneAccountById(entity.getIban())).withSelfRel(),
+                        .getOneAccountById(userId,entity.getIban())).withSelfRel(),
                 linkTo(methodOn(AccountController.class)
-                        .getAllAccounts()).withRel("collection"),
+                        .getAllAccountsByUserId(userId)).withRel("collection"),
                 linkTo(methodOn(CarteController.class)
-                        .getAllCartesByAccountId(entity.getIban())).withRel("cartes"),
+                        .getAllCartesByAccountId(userId, entity.getIban())).withRel("cartes"),
                 linkTo(methodOn(OperationController.class).getAllOperationsByAccountId(entity.getIban())).withRel("operations"));
     }
 
     @Override
     public CollectionModel<EntityModel<Account>> toCollectionModel(Iterable<? extends Account> entities) {
+
         List<EntityModel<Account>> accountModel = StreamSupport
                 .stream(entities.spliterator(), false)
                 .map(i -> toModel(i))
                 .collect(Collectors.toList());
 
+        EntityModel<Account> firstAccount = accountModel.get(0);
+
         return CollectionModel.of(accountModel,
                 linkTo(methodOn(AccountController.class)
-                        .getAllAccounts()).withSelfRel());
+                        .getAllAccountsByUserId(firstAccount.getContent().getUser().getId())).withSelfRel());
+
     }
 }

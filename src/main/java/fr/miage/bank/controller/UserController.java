@@ -57,6 +57,8 @@ public class UserController {
                 user.getNom(),
                 user.getPrenom(),
                 user.getBirthDate(),
+                user.getNoPasseport(),
+                user.getNumTel(),
                 user.getEmail(),
                 user.getPassword()
         );
@@ -111,8 +113,8 @@ public class UserController {
                 }
             });
 
-            validator.validate(new UserInput(user.getNom(), user.getPrenom(), user.getBirthDate(), user.getEmail(),
-                    user.getPassword()));
+            validator.validate(new UserInput(user.getNom(), user.getPrenom(), user.getBirthDate(),
+                    user.getNoPasseport(), user.getNumTel(), user.getEmail(), user.getPassword()));
             user.setId(userId);
             userService.updateUser(user);
             return ResponseEntity.ok().build();

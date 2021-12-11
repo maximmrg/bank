@@ -27,6 +27,8 @@ public class User implements Serializable {
     private String nom;
     private String prenom;
     private Date birthDate;
+    private String noPasseport;
+    private String numTel;
     private String email;
     private String password;
 

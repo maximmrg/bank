@@ -16,15 +16,17 @@ import java.util.Optional;
 public class AccountService {
 
     private final AccountRepository aRepository;
-    private final CarteRepository cRepository;
-    private final OperationRepository oRepository;
 
-    public Iterable<Account> findAll(){
-        return aRepository.findAll();
+    public Iterable<Account> findAllByUserId(String userId){
+        return aRepository.findAllByUser_Id(userId);
     }
 
     public Optional<Account> findById(String id){
         return aRepository.findById(id);
+    }
+
+    public Optional<Account> findByUserIdAndIban(String userId, String iban){
+        return aRepository.findByUser_IdAndIban(userId, iban);
     }
 
     public boolean existById(String id ){
@@ -37,17 +39,5 @@ public class AccountService {
 
     public Account createAccount(Account account){
         return aRepository.save(account);
-    }
-
-    public Iterable<Carte> findAllCartes(String id){
-        return cRepository.findAllByAccount_Iban(id);
-    }
-
-    public Iterable<Operation> findAllOperations(String id){
-        return oRepository.findAllByCompteCrediteur_Iban(id);
-    }
-
-    public Optional<Operation> findOperationById(String id){
-        return oRepository.findById(id);
     }
 }

@@ -24,7 +24,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @ExposesResourceFor(Account.class)
-@RequestMapping(value = "/accounts")
+@RequestMapping(value = "/users/{userId}/accounts")
 public class AccountController {
 
     private final AccountService accountService;
@@ -40,29 +40,27 @@ public class AccountController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllAccounts(){
-        Iterable<Account> allAccounts = accountService.findAll();
+    public ResponseEntity<?> getAllAccountsByUserId(@PathVariable("userId") String userId){
+        Iterable<Account> allAccounts = accountService.findAllByUserId(userId);
         return ResponseEntity.ok(assembler.toCollectionModel(allAccounts));
     }
 
     @GetMapping(value = "/{accountId}")
-    public ResponseEntity<?> getOneAccountById(@PathVariable("accountId") String id){
-        return Optional.ofNullable(accountService.findById(id)).filter(Optional::isPresent)
+    public ResponseEntity<?> getOneAccountById(@PathVariable("userId") String userId, @PathVariable("accountId") String iban){
+        return Optional.ofNullable(accountService.findByUserIdAndIban(userId, iban)).filter(Optional::isPresent)
                 .map(i -> ResponseEntity.ok(assembler.toModel(i.get())))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     @Transactional
-    public ResponseEntity<?> saveAccount(@RequestBody @Valid AccountInput account){
+    public ResponseEntity<?> saveAccount(@PathVariable("userId") String userId, @RequestBody @Valid AccountInput account){
 
-        Optional<User> optionUser = userService.findById(account.getUserId());
+        Optional<User> optionUser = userService.findById(userId);
 
         Account account2save = new Account(
                 account.getIBAN(),
                 account.getPays(),
-                account.getNoPasseport(),
-                account.getNumTel(),
                 account.getSecret(),
                 account.getSolde(),
                 optionUser.get()
@@ -76,7 +74,7 @@ public class AccountController {
 
     @PutMapping(value = "/{accountId}")
     @Transactional
-    public ResponseEntity<?> updateAccount(@RequestBody Account account, @PathVariable("accountId") String accountIban){
+    public ResponseEntity<?> updateAccount(@RequestBody Account account, @PathVariable("userId") String userId, @PathVariable("accountId") String accountIban){
         Optional<Account> body = Optional.ofNullable(account);
 
         if(!body.isPresent()) {
@@ -94,10 +92,10 @@ public class AccountController {
 
     @PatchMapping(value = "/{accountId}")
     @Transactional
-    public ResponseEntity<?> updateAccountPartiel(@PathVariable("accountId") String accountIban,
+    public ResponseEntity<?> updateAccountPartiel(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban,
                                                   @RequestBody Map<Object, Object> fields) {
 
-        Optional<Account> body = accountService.findById(accountIban);
+        Optional<Account> body = accountService.findByUserIdAndIban(userId, accountIban);
 
         if(body.isPresent()) {
             Account account = body.get();
@@ -119,7 +117,7 @@ public class AccountController {
             });
 
             validator.validate(new AccountInput(account.getIban(), account.getPays(),
-                    account.getNoPasseport(), account.getNumTel(), account.getSecret(), account.getSolde(), account.getOwner().getId()));
+                    account.getSecret(), account.getSolde(), account.getUser().getId()));
             account.setIban(accountIban);
             accountService.updateAccount(account);
             return ResponseEntity.ok().build();

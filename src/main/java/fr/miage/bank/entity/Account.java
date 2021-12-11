@@ -22,13 +22,11 @@ public class Account implements Serializable {
 
     private String pays;
 
-    private String noPasseport;
-    private String numTel;
     private String secret;
 
     private double solde;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User owner;
+    private User user;
 }

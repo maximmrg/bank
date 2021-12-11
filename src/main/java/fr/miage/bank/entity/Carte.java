@@ -28,6 +28,6 @@ public class Carte {
     private boolean virtual;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "account_iban")
     private Account account;
 }

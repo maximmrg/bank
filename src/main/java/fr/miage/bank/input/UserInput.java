@@ -24,6 +24,12 @@ public class UserInput {
     @NotNull
     private Date birthDate;
 
+    @Size(min = 5)
+    private String noPasseport;
+
+    @Size(min = 10, max = 10)
+    private String numTel;
+
     @NotNull
     private String email;
 
