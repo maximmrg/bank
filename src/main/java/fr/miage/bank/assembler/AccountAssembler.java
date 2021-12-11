@@ -23,6 +23,7 @@ public class AccountAssembler implements RepresentationModelAssembler<Account, E
     @Override
     public EntityModel<Account> toModel(Account entity) {
         String userId = entity.getUser().getId();
+
         return EntityModel.of(entity,
                 linkTo(methodOn(AccountController.class)
                         .getOneAccountById(userId,entity.getIban())).withSelfRel(),
@@ -30,7 +31,7 @@ public class AccountAssembler implements RepresentationModelAssembler<Account, E
                         .getAllAccountsByUserId(userId)).withRel("collection"),
                 linkTo(methodOn(CarteController.class)
                         .getAllCartesByAccountId(userId, entity.getIban())).withRel("cartes"),
-                linkTo(methodOn(OperationController.class).getAllOperationsByAccountId(entity.getIban())).withRel("operations"));
+                linkTo(methodOn(OperationController.class).getAllOperationsByAccountId(userId, entity.getIban(), null)).withRel("operations"));
     }
 
     @Override

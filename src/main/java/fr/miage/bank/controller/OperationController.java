@@ -21,13 +21,19 @@ public class OperationController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllOperationsByAccountId(@PathVariable("accountId") String accountId){
-        Iterable<Operation> allOperations = operationService.findAllOperationsByAccountId(accountId);
+    public ResponseEntity<?> getAllOperationsByAccountId(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @RequestParam( required = false, name = "categorie") Optional<String> categ){
+        Iterable<Operation> allOperations;
+
+        if(categ.isPresent()){
+            allOperations = operationService.findAllOperationsByAccountAndCateg(userId, accountIban, categ.get());
+        } else {
+            allOperations = operationService.findAllOperationsByUserIdAndAccountId(userId, accountIban);
+        }
         return ResponseEntity.ok(assembler.toCollectionModel(allOperations));
     }
 
     @GetMapping(value = "/{operationId}")
-    public ResponseEntity<?> getOneOperationById(@PathVariable("accountId") String accountId, @PathVariable("operationId") String operationId){
+    public ResponseEntity<?> getOneOperationById(@PathVariable("userId") String userId, @PathVariable("accountId") String accountId, @PathVariable("operationId") String operationId){
         return Optional.ofNullable(operationService.findByIdAndCompteOwnerId(operationId, accountId)).filter(Optional::isPresent)
                 .map(i -> ResponseEntity.ok(assembler.toModel(i.get())))
                 .orElse(ResponseEntity.notFound().build());
