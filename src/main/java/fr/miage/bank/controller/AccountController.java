@@ -71,7 +71,10 @@ public class AccountController {
         //URI location = linkTo(AccountController.class).slash(saved.getIban()).toUri();
         //return ResponseEntity.created(location).build();
 
-        return ResponseEntity.ok(saved);
+        URI location = linkTo(methodOn(AccountController.class).getOneAccountById(userId, saved.getIban())).toUri();
+        return ResponseEntity.created(location).build();
+
+        //return ResponseEntity.ok(saved);
     }
 
     @PutMapping(value = "/{accountId}")

@@ -6,15 +6,20 @@ import fr.miage.bank.entity.Carte;
 import fr.miage.bank.input.CarteInput;
 import fr.miage.bank.service.AccountService;
 import fr.miage.bank.service.CarteService;
+import fr.miage.bank.validator.AccountValidator;
+import fr.miage.bank.validator.CarteValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import java.util.Optional;
-import java.util.UUID;
+import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -26,6 +31,8 @@ public class CarteController {
     private final CarteService carteService;
     private final AccountService accountService;
     private final CarteAssembler assembler;
+    private final CarteValidator validator;
+
 
     @GetMapping
     public ResponseEntity<?> getAllCartesByAccountId(@PathVariable("userId") String userId, @PathVariable("accountId") String accountId){
@@ -49,8 +56,8 @@ public class CarteController {
 
         Carte carte2save = new Carte(
                 UUID.randomUUID().toString(),
-                Integer.parseInt(carte.getCode()),
-                Integer.parseInt(carte.getCrypto()),
+                carte.getCode(),
+                carte.getCrypto(),
                 carte.isBloque(),
                 carte.isLocalisation(),
                 carte.getPlafond(),
@@ -95,5 +102,42 @@ public class CarteController {
         }
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping(value = "/{carteId}")
+    @Transactional
+    public ResponseEntity<?> updateCartePartial(@PathVariable("accountId") String accoundIban,
+                                                @PathVariable("carteId") String carteId,
+                                                @RequestBody Map<Object, Object> fields){
+        Optional<Carte> body = carteService.findByIdAndAccountId(carteId, accoundIban);
+
+        if(body.isPresent()){
+            Carte carte = body.get();
+
+            fields.forEach((f,v) -> {
+                Field field = ReflectionUtils.findField(Carte.class, f.toString());
+                field.setAccessible(true);
+
+                if(field.getType() == Date.class){
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.FRENCH);
+                    try {
+                        ReflectionUtils.setField(field, carte, formatter.parse(v.toString()));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                } else{
+                    ReflectionUtils.setField(field, carte, v);
+                }
+            });
+
+            validator.validate(new CarteInput(carte.getCode(), carte.getCrypto(), carte.isBloque(),
+                    carte.isLocalisation(), carte.getPlafond(), carte.isSansContact(),
+                    carte.isVirtual()));
+
+            carte.setId(carteId);
+            carteService.updateCarte(carte);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }
