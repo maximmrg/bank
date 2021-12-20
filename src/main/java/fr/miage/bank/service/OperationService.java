@@ -33,4 +33,8 @@ public class OperationService {
     public Optional<Operation> findByIdAndCompteOwnerId(String operationId, String accountId){
         return oRepository.findByIdAndCompteCrediteur_Iban(operationId, accountId);
     }
+
+    public Operation createOperation(Operation operation){
+        return oRepository.save(operation);
+    }
 }

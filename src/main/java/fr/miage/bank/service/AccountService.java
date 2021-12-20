@@ -29,6 +29,10 @@ public class AccountService {
         return aRepository.findByUser_IdAndIban(userId, iban);
     }
 
+    public Optional<Account> findByIban(String iban){
+        return aRepository.findById(iban);
+    }
+
     public boolean existById(String id ){
         return aRepository.existsById(id);
     }
