@@ -1,5 +1,6 @@
 package fr.miage.bank.controller;
 
+import com.mifmif.common.regex.Generex;
 import fr.miage.bank.assembler.CarteAssembler;
 import fr.miage.bank.entity.Account;
 import fr.miage.bank.entity.Carte;
@@ -17,11 +18,13 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequiredArgsConstructor
@@ -54,10 +57,15 @@ public class CarteController {
 
         Account account = optionalAccount.get();
 
+        Generex genrexCarteNum = new Generex("([0-9]{16})");
+        Generex genrexCarteCode = new Generex("([0-9]{4})");
+        Generex genrexCrypto = new Generex("([0-9]{3})");
+
         Carte carte2save = new Carte(
-                UUID.randomUUID().toString(),
-                carte.getCode(),
-                carte.getCrypto(),
+                genrexCarteNum.random(),
+                genrexCarteNum.random(),
+                genrexCarteCode.random(),
+                genrexCrypto.random(),
                 carte.isBloque(),
                 carte.isLocalisation(),
                 carte.getPlafond(),
@@ -71,7 +79,9 @@ public class CarteController {
         //Link location = linkTo(CarteController.class).slash(saved.getId()).slash(accountId).withSelfRel();
         //return ResponseEntity.ok(location.withSelfRel());
 
-        return ResponseEntity.ok(saved);
+        URI location = linkTo(methodOn(CarteController.class).getOneCarteByIdAndAccountId(userId, accountId, saved.getId())).toUri();
+
+        return ResponseEntity.created(location).build();
     }
 
     @PutMapping(value = "/{carteId}")
@@ -130,7 +140,7 @@ public class CarteController {
                 }
             });
 
-            validator.validate(new CarteInput(carte.getCode(), carte.getCrypto(), carte.isBloque(),
+            validator.validate(new CarteInput(carte.isBloque(),
                     carte.isLocalisation(), carte.getPlafond(), carte.isSansContact(),
                     carte.isVirtual()));
 

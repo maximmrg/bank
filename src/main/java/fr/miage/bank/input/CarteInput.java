@@ -14,14 +14,6 @@ import javax.validation.constraints.Size;
 public class CarteInput {
 
     @NotNull
-    @Size(min = 4, max = 4)
-    private String code;
-
-    @NotNull
-    @Size(min = 3, max = 3)
-    private String crypto;
-
-    @NotNull
     private boolean bloque;
 
     @NotNull

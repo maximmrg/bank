@@ -19,6 +19,7 @@ public class Carte {
     @Column(name = "id", nullable = false)
     private String id;
 
+    private String numero;
     private String code;
     private String crypto;
     private boolean bloque;
