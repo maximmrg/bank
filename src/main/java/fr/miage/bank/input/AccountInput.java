@@ -27,6 +27,7 @@ public class AccountInput {
     @Size(min = 5, max = 10)
     private String secret;
 
+    @Min(0)
     private double solde;
 
 }

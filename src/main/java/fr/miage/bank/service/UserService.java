@@ -25,4 +25,6 @@ public class UserService {
 
     public User updateUser(User user) {return uRepository.save(user);}
 
+    public Optional<User> getUserByEmail(String email) {return uRepository.findByEmail(email);}
+
 }
