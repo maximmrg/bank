@@ -18,5 +18,9 @@ public class BankApplication {
 		return new Argon2PasswordEncoder();
 	}
 
+	@Bean
+	Argon2PasswordEncoder argon2PasswordEncoder(){
+		return new Argon2PasswordEncoder();
+	}
 
 }
