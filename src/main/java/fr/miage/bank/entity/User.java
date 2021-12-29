@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 @Entity
@@ -32,4 +34,17 @@ public class User implements Serializable {
     private String email;
     private String password;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Collection<Role> roles = new ArrayList<>();
+
+    public User(String id, String nom, String prenom, Date birthDate, String noPasseport, String numTel, String email, String password) {
+        this.id = id;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.birthDate = birthDate;
+        this.noPasseport = noPasseport;
+        this.numTel = numTel;
+        this.email = email;
+        this.password = password;
+    }
 }

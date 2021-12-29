@@ -28,13 +28,18 @@ import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
     private final Argon2PasswordEncoder argon2PasswordEncoder;
     private final List<TargetedPermissionEvaluator> permissionEvaluators;
+
+    public SecurityConfig(UserDetailsService userDetailsService, Argon2PasswordEncoder argon2PasswordEncoder, List<TargetedPermissionEvaluator> permissionEvaluators) {
+        this.userDetailsService = userDetailsService;
+        this.argon2PasswordEncoder = argon2PasswordEncoder;
+        this.permissionEvaluators = permissionEvaluators;
+    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception{

@@ -7,7 +7,9 @@ import fr.miage.bank.service.UserService;
 import fr.miage.bank.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.server.ExposesResourceFor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,10 +25,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
 @ExposesResourceFor(User.class)
-@RequestMapping(value = "/users")
+@RequestMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {
 
     private final UserService userService;
+
     private final UserAssembler assembler;
     private final UserValidator validator;
 
@@ -50,6 +53,7 @@ public class UserController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
     public ResponseEntity<?> saveUser(@RequestBody @Valid UserInput user){
         User user2save = new User(
