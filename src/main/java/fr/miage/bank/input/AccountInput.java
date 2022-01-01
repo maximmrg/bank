@@ -18,9 +18,6 @@ import java.util.Date;
 @AllArgsConstructor
 public class AccountInput {
 
-    @Size(min = 3)
-    private String IBAN;
-
     @NotNull
     private String pays;
 

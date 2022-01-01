@@ -29,12 +29,10 @@ import java.util.Map;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
     private final Argon2PasswordEncoder argon2PasswordEncoder;
-    private final List<TargetedPermissionEvaluator> permissionEvaluators;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception{
@@ -61,17 +59,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
-    @Bean
-    public PermissionEvaluator permissionEvaluator() {
-        Map<String, PermissionEvaluator> map = new HashMap<>();
-
-        // Build lookup table of PermissionEvaluator by supported target type
-        for (TargetedPermissionEvaluator permissionEvaluator : permissionEvaluators) {
-            map.put(permissionEvaluator.getTargetType(), permissionEvaluator);
-        }
-
-        return new PermissionEvaluatorManager(map);
-    }
-
 }

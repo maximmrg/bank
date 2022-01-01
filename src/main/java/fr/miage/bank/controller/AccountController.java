@@ -1,5 +1,6 @@
 package fr.miage.bank.controller;
 
+import fr.miage.bank.BankApplication;
 import fr.miage.bank.assembler.AccountAssembler;
 import fr.miage.bank.entity.*;
 import fr.miage.bank.input.AccountInput;
@@ -7,8 +8,11 @@ import fr.miage.bank.service.AccountService;
 import fr.miage.bank.service.UserService;
 import fr.miage.bank.validator.AccountValidator;
 import lombok.RequiredArgsConstructor;
+import org.iban4j.CountryCode;
+import org.iban4j.Iban;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,13 +58,20 @@ public class AccountController {
 
     @PostMapping
     @Transactional
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> saveAccount(@PathVariable("userId") String userId, @RequestBody @Valid AccountInput account){
 
         Optional<User> optionUser = userService.findById(userId);
 
+        String pays = account.getPays();
+
+        Iban iban = new Iban.Builder()
+                .countryCode(CountryCode.getByCode(BankApplication.countries.get(pays)))
+                .buildRandom();
+
         Account account2save = new Account(
-                account.getIBAN(),
-                account.getPays(),
+                iban.toString(),
+                pays,
                 account.getSecret(),
                 account.getSolde(),
                 optionUser.get()
@@ -121,7 +132,7 @@ public class AccountController {
                 }
             });
 
-            validator.validate(new AccountInput(account.getIban(), account.getPays(),
+            validator.validate(new AccountInput(account.getPays(),
                     account.getSecret(), account.getSolde()));
             account.setIban(accountIban);
             accountService.updateAccount(account);

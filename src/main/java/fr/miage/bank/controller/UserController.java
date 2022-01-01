@@ -53,7 +53,6 @@ public class UserController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
     public ResponseEntity<?> saveUser(@RequestBody @Valid UserInput user){
         User user2save = new User(
@@ -75,6 +74,7 @@ public class UserController {
 
     @PutMapping(value = "/{userId}")
     @Transactional
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> updateUser(@RequestBody User user, @PathVariable("userId") String userId){
         Optional<User> body = Optional.ofNullable(user);
 
@@ -93,6 +93,7 @@ public class UserController {
 
     @PatchMapping(value = "/{userId}")
     @Transactional
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> updateUserPartial(@PathVariable("userId") String userId,
                                                @RequestBody Map<Object, Object> fields){
 
