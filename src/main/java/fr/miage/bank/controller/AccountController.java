@@ -69,6 +69,16 @@ public class AccountController {
                 .countryCode(CountryCode.getByCode(BankApplication.countries.get(pays)))
                 .buildRandom();
 
+        boolean existIban = accountService.existById(iban.toString());
+
+        while(existIban){
+            iban = new Iban.Builder()
+                    .countryCode(CountryCode.getByCode(BankApplication.countries.get(pays)))
+                    .buildRandom();
+
+            existIban = accountService.existById(iban.toString());
+        }
+
         Account account2save = new Account(
                 iban.toString(),
                 pays,
@@ -90,6 +100,7 @@ public class AccountController {
 
     @PutMapping(value = "/{accountId}")
     @Transactional
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> updateAccount(@RequestBody Account account, @PathVariable("userId") String userId, @PathVariable("accountId") String accountIban){
         Optional<Account> body = Optional.ofNullable(account);
 
@@ -108,6 +119,7 @@ public class AccountController {
 
     @PatchMapping(value = "/{accountId}")
     @Transactional
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> updateAccountPartiel(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban,
                                                   @RequestBody Map<Object, Object> fields) {
 
