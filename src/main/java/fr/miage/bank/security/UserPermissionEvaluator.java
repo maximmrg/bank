@@ -21,7 +21,7 @@ public class UserPermissionEvaluator implements TargetedPermissionEvaluator {
 
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission){
-        throw new UnsupportedOperationException("Not supported by this PersmisionEvaluator: " + UserPermissionEvaluator.class);
+        throw new UnsupportedOperationException("Not supported by this PermissionEvaluator: " + UserPermissionEvaluator.class);
     }
 
     @Override

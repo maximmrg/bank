@@ -10,6 +10,7 @@ import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +27,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @RestController
 @ExposesResourceFor(User.class)
 @RequestMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
@@ -33,11 +35,7 @@ public class UserController {
     private final UserAssembler assembler;
     private final UserValidator validator;
 
-    public UserController(UserService userService, UserAssembler assembler, UserValidator validator) {
-        this.userService = userService;
-        this.assembler = assembler;
-        this.validator = validator;
-    }
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping
     public ResponseEntity<?> getAllUsers(){
@@ -63,7 +61,7 @@ public class UserController {
                 user.getNoPasseport(),
                 user.getNumTel(),
                 user.getEmail(),
-                user.getPassword()
+                passwordEncoder.encode(user.getPassword())
         );
 
         User saved = userService.createUser(user2save);
