@@ -4,14 +4,17 @@ import com.mifmif.common.regex.Generex;
 import fr.miage.bank.assembler.CarteAssembler;
 import fr.miage.bank.entity.Account;
 import fr.miage.bank.entity.Carte;
+import fr.miage.bank.entity.User;
 import fr.miage.bank.input.CarteInput;
 import fr.miage.bank.service.AccountService;
 import fr.miage.bank.service.CarteService;
+import fr.miage.bank.service.UserService;
 import fr.miage.bank.validator.AccountValidator;
 import fr.miage.bank.validator.CarteValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,19 +34,24 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping(value = "users/{userId}/accounts/{accountId}/cartes")
 @ExposesResourceFor(Carte.class)
 public class CarteController {
+
     private final CarteService carteService;
     private final AccountService accountService;
+    private final UserService userService;
+
     private final CarteAssembler assembler;
     private final CarteValidator validator;
 
 
     @GetMapping
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> getAllCartesByAccountId(@PathVariable("userId") String userId, @PathVariable("accountId") String accountId){
         Iterable<Carte> allCartes = carteService.findAllCartesByAccountId(accountId);
         return ResponseEntity.ok(assembler.toCollectionModel(allCartes));
     }
 
     @GetMapping(value = "/{carteId}")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> getOneCarteByIdAndAccountId(@PathVariable("userId") String userId, @PathVariable("accountId") String accountId, @PathVariable("carteId") String carteId){
         return Optional.ofNullable(carteService.findByIdAndAccountId(carteId, accountId)).filter(Optional::isPresent)
                 .map(i -> ResponseEntity.ok(assembler.toModel(i.get())))
@@ -52,6 +60,7 @@ public class CarteController {
 
     @PostMapping
     @Transactional
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> createCarte(@RequestBody @Valid CarteInput carte, @PathVariable("userId") String userId, @PathVariable("accountId") String accountId){
         Optional<Account> optionalAccount = accountService.findById(accountId);
 
@@ -86,6 +95,7 @@ public class CarteController {
 
     @PutMapping(value = "/{carteId}")
     @Transactional
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> updateCarte(@RequestBody Carte carte, @PathVariable("carteId") String carteId){
         Optional<Carte> body = Optional.ofNullable(carte);
 
@@ -105,6 +115,7 @@ public class CarteController {
 
     @DeleteMapping(value = "/{carteId}")
     @Transactional
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> deleteCarte(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @PathVariable("carteId") String carteId){
         Optional<Carte> carte = carteService.findByIdAndAccountId(carteId, accountIban);
         if(carte.isPresent()){
@@ -116,6 +127,7 @@ public class CarteController {
 
     @PatchMapping(value = "/{carteId}")
     @Transactional
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> updateCartePartial(@PathVariable("accountId") String accoundIban,
                                                 @PathVariable("carteId") String carteId,
                                                 @RequestBody Map<Object, Object> fields){
@@ -149,5 +161,109 @@ public class CarteController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping(value = "/{carteId}/block")
+    @Transactional
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    public ResponseEntity<?> blockCarte(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @PathVariable("carteId") String carteId) {
+
+        Optional<Account> optionAccount = accountService.findByUserIdAndIban(userId, accountIban);
+        if(!optionAccount.isPresent()){
+            return ResponseEntity.notFound().build();
+        }
+
+        Optional<Carte> optionCarte = carteService.findByIdAndAccountId(carteId, accountIban);
+        if(!optionCarte.isPresent()){
+            return ResponseEntity.notFound().build();
+        }
+
+        Carte carte = optionCarte.get();
+        Carte carte2save = carteService.blockCarte(carte);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/{carteId}/activeLocalisation")
+    @Transactional
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    public ResponseEntity<?> activeLocalisation(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @PathVariable("carteId") String carteId){
+        Optional<Account> optionAccount = accountService.findByUserIdAndIban(userId, accountIban);
+        if(!optionAccount.isPresent()){
+            return ResponseEntity.notFound().build();
+        }
+
+        Optional<Carte> optionCarte = carteService.findByIdAndAccountId(carteId, accountIban);
+        if(!optionCarte.isPresent()){
+            return ResponseEntity.notFound().build();
+        }
+
+        Carte carte = optionCarte.get();
+        Carte carte2save = carteService.activeLocalisation(carte);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/{carteId}/setPlafond")
+    @Transactional
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    public ResponseEntity<?> setPlafond(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @PathVariable("carteId") String carteId,
+                                           @RequestParam("plafond") int plafond) {
+        Optional<Account> optionAccount = accountService.findByUserIdAndIban(userId, accountIban);
+        if(!optionAccount.isPresent()){
+            return ResponseEntity.notFound().build();
+        }
+
+        Optional<Carte> optionCarte = carteService.findByIdAndAccountId(carteId, accountIban);
+        if(!optionCarte.isPresent()){
+            return ResponseEntity.notFound().build();
+        }
+
+        Carte carte = optionCarte.get();
+        Carte carte2save = carteService.setPlafond(carte, plafond);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/{carteId}/setContact")
+    @Transactional
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    public ResponseEntity<?> setSansContact(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @PathVariable("carteId") String carteId){
+
+        Optional<Account> optionAccount = accountService.findByUserIdAndIban(userId, accountIban);
+        if(!optionAccount.isPresent()){
+            return ResponseEntity.notFound().build();
+        }
+
+        Optional<Carte> optionCarte = carteService.findByIdAndAccountId(carteId, accountIban);
+        if(!optionCarte.isPresent()){
+            return ResponseEntity.notFound().build();
+        }
+
+        Carte carte = optionCarte.get();
+        Carte carte2save = carteService.setSansContact(carte);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/{carteId}/unsetContact")
+    @Transactional
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    public ResponseEntity<?> unsetSansContact(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @PathVariable("carteId") String carteId){
+
+        Optional<Account> optionAccount = accountService.findByUserIdAndIban(userId, accountIban);
+        if(!optionAccount.isPresent()){
+            return ResponseEntity.notFound().build();
+        }
+
+        Optional<Carte> optionCarte = carteService.findByIdAndAccountId(carteId, accountIban);
+        if(!optionCarte.isPresent()){
+            return ResponseEntity.notFound().build();
+        }
+
+        Carte carte = optionCarte.get();
+        Carte carte2save = carteService.unsetSansContact(carte);
+
+        return ResponseEntity.noContent().build();
     }
 }

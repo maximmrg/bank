@@ -36,4 +36,29 @@ public class CarteService {
     public void deleteCarte(Carte carte){
         cRepository.delete(carte);
     }
+
+    public Carte blockCarte(Carte carte){
+        carte.setBloque(true);
+        return cRepository.save(carte);
+    }
+
+    public Carte activeLocalisation(Carte carte){
+        carte.setLocalisation(true);
+        return cRepository.save(carte);
+    }
+
+    public Carte setPlafond(Carte carte, int plafond){
+        carte.setPlafond(plafond);
+        return cRepository.save(carte);
+    }
+
+    public Carte setSansContact(Carte carte){
+        carte.setSansContact(true);
+        return cRepository.save(carte);
+    }
+
+    public Carte unsetSansContact(Carte carte){
+        carte.setSansContact(false);
+        return cRepository.save(carte);
+    }
 }
