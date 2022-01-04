@@ -71,7 +71,7 @@ public class CarteController {
         Generex genrexCrypto = new Generex("([0-9]{3})");
 
         Carte carte2save = new Carte(
-                genrexCarteNum.random(),
+                UUID.randomUUID().toString(),
                 genrexCarteNum.random(),
                 genrexCarteCode.random(),
                 genrexCrypto.random(),
