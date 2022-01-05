@@ -29,4 +29,12 @@ public class Account implements Serializable {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public void débiterCompte(double montant){
+        this.solde = this.solde - montant;
+    }
+
+    public void crediterCompte(double montant, double taux){
+        this.solde = this.solde + (montant*taux);
+    }
 }

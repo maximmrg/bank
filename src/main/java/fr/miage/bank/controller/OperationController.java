@@ -59,20 +59,39 @@ public class OperationController {
         Optional<Account> optionalAccountDeb = accountService.findByIban(operation.getCompteDebiteurId());
         Account accountDeb = optionalAccountDeb.get();
 
-        Operation operation2save = new Operation(
-                UUID.randomUUID().toString(),
-                new Timestamp(System.currentTimeMillis()),
-                operation.getLibelle(),
-                operation.getMontant(),
-                operation.getTaux(),
-                accountDeb,
-                accountCred,
-                operation.getCateg(),
-                operation.getPays()
-        );
+        if(accountDeb.getSolde() >= operation.getMontant()) {
 
-        Operation saved = operationService.createOperation(operation2save);
+            Operation operation2save = new Operation(
+                    UUID.randomUUID().toString(),
+                    new Timestamp(System.currentTimeMillis()),
+                    operation.getLibelle(),
+                    operation.getMontant(),
+                    operation.getTaux(),
+                    accountDeb,
+                    accountCred,
+                    operation.getCateg(),
+                    operation.getPays()
+            );
 
-        return ResponseEntity.ok(saved);
+            Operation operation2saveCred = new Operation(
+                    UUID.randomUUID().toString(),
+                    new Timestamp(System.currentTimeMillis()),
+                    operation.getLibelle(),
+                    operation.getMontant(),
+                    operation.getTaux(),
+                    accountCred,
+                    accountDeb,
+                    operation.getCateg(),
+                    operation.getPays()
+            );
+
+            Operation saved = operationService.createOperation(operation2save);
+            Operation savedCred = operationService.createOperation(operation2saveCred);
+            accountDeb.débiterCompte(operation.getMontant());
+            accountCred.crediterCompte(operation.getMontant(), operation.getTaux());
+            return ResponseEntity.ok(saved);
+        }
+
+        return ResponseEntity.badRequest().build();
     }
 }

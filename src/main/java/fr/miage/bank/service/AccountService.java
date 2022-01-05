@@ -44,4 +44,14 @@ public class AccountService {
     public Account createAccount(Account account){
         return aRepository.save(account);
     }
+
+    public void debiterAccount(Account account, double montant) {
+        account.débiterCompte(montant);
+        aRepository.save(account);
+    }
+
+    public void crediterAccount(Account account, double montant){
+        account.crediterCompte(montant);
+        aRepository.save(account);
+    }
 }
