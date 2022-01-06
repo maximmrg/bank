@@ -6,6 +6,8 @@ import fr.miage.bank.entity.Operation;
 import fr.miage.bank.input.OperationInput;
 import fr.miage.bank.service.AccountService;
 import fr.miage.bank.service.OperationService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -18,18 +20,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
+@ExposesResourceFor(Operation.class)
 @RequestMapping(value = "users/{userId}/accounts/{accountId}/operations")
 public class OperationController {
     private final OperationService operationService;
     private final AccountService accountService;
 
     private final OperationAssembler assembler;
-
-    public OperationController(OperationService operationService, AccountService accountService, OperationAssembler assembler) {
-        this.operationService = operationService;
-        this.accountService = accountService;
-        this.assembler = assembler;
-    }
 
     @GetMapping
     public ResponseEntity<?> getAllOperationsByAccountId(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @RequestParam( required = false, name = "categorie") Optional<String> categ){

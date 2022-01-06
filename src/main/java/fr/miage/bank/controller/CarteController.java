@@ -83,6 +83,16 @@ public class CarteController {
                 account
         );
 
+        if(carte.isVirtual()){
+            Date expirationDate = new Date();
+            Calendar c = Calendar.getInstance();
+            c.setTime(expirationDate);
+            c.add(Calendar.DATE, 15);
+            expirationDate = c.getTime();
+
+            carte2save.setDateExpiration(expirationDate);
+        }
+
         Carte saved = carteService.createCarte(carte2save);
 
         //Link location = linkTo(CarteController.class).slash(saved.getId()).slash(accountId).withSelfRel();
@@ -93,7 +103,7 @@ public class CarteController {
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping(value = "/{carteId}")
+    /*@PutMapping(value = "/{carteId}")
     @Transactional
     @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> updateCarte(@RequestBody Carte carte, @PathVariable("carteId") String carteId){
@@ -111,7 +121,7 @@ public class CarteController {
         Carte result = carteService.updateCarte(carte);
 
         return ResponseEntity.ok().build();
-    }
+    }*/
 
     @DeleteMapping(value = "/{carteId}")
     @Transactional
@@ -125,7 +135,7 @@ public class CarteController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping(value = "/{carteId}")
+    /*@PatchMapping(value = "/{carteId}")
     @Transactional
     @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> updateCartePartial(@PathVariable("accountId") String accoundIban,
@@ -161,7 +171,7 @@ public class CarteController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
-    }
+    }*/
 
     @PostMapping(value = "/{carteId}/block")
     @Transactional
@@ -209,6 +219,7 @@ public class CarteController {
     @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> setPlafond(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @PathVariable("carteId") String carteId,
                                            @RequestParam("plafond") int plafond) {
+
         Optional<Account> optionAccount = accountService.findByUserIdAndIban(userId, accountIban);
         if(!optionAccount.isPresent()){
             return ResponseEntity.notFound().build();

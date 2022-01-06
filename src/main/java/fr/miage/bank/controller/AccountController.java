@@ -27,6 +27,7 @@ import java.util.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
+@RequiredArgsConstructor
 @ExposesResourceFor(Account.class)
 @RequestMapping(value = "/users/{userId}/accounts")
 public class AccountController {
@@ -35,13 +36,6 @@ public class AccountController {
     private final UserService userService;
     private final AccountAssembler assembler;
     private final AccountValidator validator;
-
-    public AccountController(AccountService accountService, UserService userService, AccountAssembler assembler, AccountValidator validator) {
-        this.accountService = accountService;
-        this.userService = userService;
-        this.assembler = assembler;
-        this.validator = validator;
-    }
 
     @GetMapping
     public ResponseEntity<?> getAllAccountsByUserId(@PathVariable("userId") String userId){
