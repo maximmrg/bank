@@ -75,7 +75,7 @@ public class CarteController {
                 genrexCarteNum.random(),
                 genrexCarteCode.random(),
                 genrexCrypto.random(),
-                carte.isBloque(),
+                false,
                 carte.isLocalisation(),
                 carte.getPlafond(),
                 carte.isSansContact(),

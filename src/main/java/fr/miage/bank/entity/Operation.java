@@ -36,6 +36,4 @@ public class Operation implements Serializable {
     //private String nomCrediteur;
 
     private String categ;
-    private String pays;
-
 }

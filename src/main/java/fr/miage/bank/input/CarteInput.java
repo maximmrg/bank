@@ -14,9 +14,6 @@ import javax.validation.constraints.Size;
 public class CarteInput {
 
     @NotNull
-    private boolean bloque;
-
-    @NotNull
     private boolean localisation;
 
     @NotNull

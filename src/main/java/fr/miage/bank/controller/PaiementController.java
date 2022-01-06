@@ -64,11 +64,14 @@ public class PaiementController {
         Optional<Carte> optionalCarte = carteService.findByIdAndAccountId(carteId, accountIban);
         Optional<Account> optionalAccount = accountService.findByIban(accountIban);
 
+        double taux = 1;
+
         Paiement paiement2save = new Paiement(
                 UUID.randomUUID().toString(),
                 optionalCarte.get(),
                 new Timestamp(System.currentTimeMillis()),
                 paiement.getMontant(),
+                taux,
                 paiement.getPays(),
                 optionalAccount.get()
         );

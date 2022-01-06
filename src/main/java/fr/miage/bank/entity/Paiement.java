@@ -22,6 +22,7 @@ public class Paiement {
 
     private Timestamp date;
     private double montant;
+    private double taux;
 
     private String pays;
 
