@@ -24,7 +24,6 @@ public class UserInput {
     private String prenom;
 
     @NotNull
-    @Pattern(regexp = "^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\\d\\d$", message="Date format must be 'dd/MM/yyyy' or 'dd.MM.yyyy' or 'dd-MM-yyyy'.")
     private Date birthDate;
 
     @Size(min = 5)

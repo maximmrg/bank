@@ -18,5 +18,5 @@ INSERT INTO account (iban, pays, secret, solde, user_id) VALUES
 INSERT INTO carte (code, crypto, bloque, localisation, plafond, sans_contact, virtual, account_iban) VALUES
 (1122, 231, false, false, 500, true, false, '132');
 
-INSERT INTO operation (date, libelle, montant, taux, debitor_account_iban, creditor_account_iban, categ, pays) VALUES
-(current_timestamp, 'loyer', 400, 1, '132', '11222', 'personne', 'France' );
+INSERT INTO operation (date, libelle, montant, taux, debitor_account_iban, creditor_account_iban, categ) VALUES
+(current_timestamp, 'loyer', 400, 1, '132', '11222', 'personne' );
