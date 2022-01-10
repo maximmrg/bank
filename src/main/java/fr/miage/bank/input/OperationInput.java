@@ -21,7 +21,7 @@ public class OperationInput {
     private double montant;
 
     @NotNull
-    private String compteDebiteurId;
+    private String compteCrediteurIban;
 
     @Size(min = 3)
     private String categ;

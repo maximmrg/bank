@@ -51,11 +51,11 @@ public class OperationController {
     @PostMapping
     @Transactional
     public ResponseEntity<?> createOperation(@RequestBody @Valid OperationInput operation, @PathVariable("userId") String userId, @PathVariable("accountId") String accountId){
-        Optional<Account> optionalAccountCred = accountService.findById(accountId);
-        Account accountCred = optionalAccountCred.get();
-
-        Optional<Account> optionalAccountDeb = accountService.findByIban(operation.getCompteDebiteurId());
+        Optional<Account> optionalAccountDeb = accountService.findById(accountId);
         Account accountDeb = optionalAccountDeb.get();
+
+        Optional<Account> optionalAccountCred = accountService.findByIban(operation.getCompteCrediteurIban());
+        Account accountCred = optionalAccountCred.get();
 
         double taux = 1;
 
@@ -72,7 +72,7 @@ public class OperationController {
                     operation.getCateg()
             );
 
-            Operation operation2saveCred = new Operation(
+            /*Operation operation2saveCred = new Operation(
                     UUID.randomUUID().toString(),
                     new Timestamp(System.currentTimeMillis()),
                     operation.getLibelle(),
@@ -81,12 +81,13 @@ public class OperationController {
                     accountCred,
                     accountDeb,
                     operation.getCateg()
-            );
+            );*/
 
             Operation saved = operationService.createOperation(operation2save);
-            Operation savedCred = operationService.createOperation(operation2saveCred);
+            //Operation savedCred = operationService.createOperation(operation2saveCred);
             accountDeb.débiterCompte(operation.getMontant());
             accountCred.crediterCompte(operation.getMontant(), taux);
+
             return ResponseEntity.ok(saved);
         }
 
