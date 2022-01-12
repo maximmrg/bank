@@ -46,12 +46,12 @@ public class AccountService {
     }
 
     public void debiterAccount(Account account, double montant) {
-        account.débiterCompte(montant);
+        account.debiterCompte(montant);
         aRepository.save(account);
     }
 
-    public void crediterAccount(Account account, double montant){
-        account.crediterCompte(montant, 1);
+    public void crediterAccount(Account account, double montant, double taux){
+        account.crediterCompte(montant, taux);
         aRepository.save(account);
     }
 }

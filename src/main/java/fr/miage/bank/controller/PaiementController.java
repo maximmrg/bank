@@ -93,8 +93,8 @@ public class PaiementController {
                 );
 
                 Paiement saved = paiementService.createPaiement(paiement2save);
-                compteDeb.débiterCompte(paiement.getMontant());
-                compteCred.crediterCompte(paiement.getMontant(), taux);
+                accountService.debiterAccount(compteDeb, paiement.getMontant());
+                accountService.crediterAccount(compteCred, paiement.getMontant(), taux);
 
                 if (carte.isVirtual()) {
                     carteService.deleteCarte(carte);

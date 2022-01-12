@@ -85,8 +85,8 @@ public class OperationController {
 
             Operation saved = operationService.createOperation(operation2save);
             //Operation savedCred = operationService.createOperation(operation2saveCred);
-            accountDeb.débiterCompte(operation.getMontant());
-            accountCred.crediterCompte(operation.getMontant(), taux);
+            accountService.debiterAccount(accountDeb, operation.getMontant());
+            accountService.crediterAccount(accountCred, operation.getMontant(), taux );
 
             return ResponseEntity.ok(saved);
         }

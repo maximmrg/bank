@@ -30,7 +30,7 @@ public class Account implements Serializable {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public void débiterCompte(double montant){
+    public void debiterCompte(double montant){
         this.solde = this.solde - montant;
     }
 
