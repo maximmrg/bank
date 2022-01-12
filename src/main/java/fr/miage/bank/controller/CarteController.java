@@ -70,6 +70,17 @@ public class CarteController {
         Generex genrexCarteCode = new Generex("([0-9]{4})");
         Generex genrexCrypto = new Generex("([0-9]{3})");
 
+        Date expirationDate = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(expirationDate);
+        if(carte.isVirtual()) {
+            c.add(Calendar.DATE, 15);
+        } else {
+            c.add(Calendar.DATE, 365*3);
+        }
+
+        expirationDate = c.getTime();
+
         Carte carte2save = new Carte(
                 UUID.randomUUID().toString(),
                 genrexCarteNum.random(),
@@ -80,10 +91,11 @@ public class CarteController {
                 carte.getPlafond(),
                 carte.isSansContact(),
                 carte.isVirtual(),
+                expirationDate,
                 account
         );
 
-        if(carte.isVirtual()){
+        /*if(carte.isVirtual()){
             Date expirationDate = new Date();
             Calendar c = Calendar.getInstance();
             c.setTime(expirationDate);
@@ -91,7 +103,7 @@ public class CarteController {
             expirationDate = c.getTime();
 
             carte2save.setDateExpiration(expirationDate);
-        }
+        }*/
 
         Carte saved = carteService.createCarte(carte2save);
 

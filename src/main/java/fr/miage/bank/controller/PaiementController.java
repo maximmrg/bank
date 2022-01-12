@@ -29,7 +29,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequiredArgsConstructor
 @ExposesResourceFor(Paiement.class)
-@RequestMapping(value = "/users/{userId}/accounts/{accountIban}/cartes/{carteId}/paiements")
 public class PaiementController {
 
     private final PaiementService paiementService;
@@ -39,14 +38,14 @@ public class PaiementController {
     private final PaiementAssembler assembler;
     private final PaiementValidator validator;
 
-    @GetMapping
+    @GetMapping("/users/{userId}/accounts/{accountIban}/cartes/{carteId}/paiements")
     @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> getAllPaiementsByCarteId(@PathVariable("userId") String userId, @PathVariable("accountIban") String iban, @PathVariable("carteId") String carteId){
         Iterable<Paiement> allPaiements = paiementService.findAllByCarteId(carteId);
         return ResponseEntity.ok(allPaiements);
     }
 
-    @GetMapping(value = "/{paiementId}")
+    @GetMapping(value = "/users/{userId}/accounts/{accountIban}/cartes/{carteId}/paiements/{paiementId}")
     @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
 
     public ResponseEntity<?> getOnePaiementById(@PathVariable("userId") String userId, @PathVariable("accountIban") String iban, @PathVariable("carteId") String carteId,
@@ -56,53 +55,56 @@ public class PaiementController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping(value = "/paiements")
     @Transactional
     @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
-    public ResponseEntity<?> createPaiement(@RequestBody @Valid PaiementInput paiement, @PathVariable("userId") String userId, @PathVariable("accountIban") String accountIban,
-                                            @PathVariable("carteId") String carteId){
+    public ResponseEntity<?> createPaiement(@RequestBody @Valid PaiementInput paiement){
 
-        Optional<Carte> optionalCarte = carteService.findByIdAndAccountId(carteId, accountIban);
-        Carte carte = optionalCarte.get();
-        Account compteDeb = carte.getAccount();
+        Optional<Carte> optionalCarte = paiementService.verifyCarte(paiement.getNumcarte(), paiement.getCryptoCarte(), paiement.getDateExpCarte(), paiement.getNomUser());
 
-        Optional<Account> optionalAccount = accountService.findByIban(paiement.getIbanCrediteur());
-        Account compteCred = optionalAccount.get();
+        //Si la carte existe, donc que les infos sont correctes
+        if(optionalCarte.isPresent()){
+            Carte carte = optionalCarte.get();
+            Account compteDeb = carte.getAccount();
 
-        if(carte.isLocalisation()){
-            String paysDeb = compteDeb.getPays();
-            String paysCred = compteCred.getPays();
+            Optional<Account> optionalAccount = accountService.findByIban(paiement.getIbanCrediteur());
+            Account compteCred = optionalAccount.get();
 
-            if(paysDeb != paysCred){
-                return ResponseEntity.badRequest().build();
-            }
-        }
+            if(carte.isLocalisation()){
+                String paysDeb = compteDeb.getPays();
+                String paysCred = compteCred.getPays();
 
-        double taux = 1;
-
-        if(compteDeb.getSolde() >= paiement.getMontant()) {
-
-            Paiement paiement2save = new Paiement(
-                    UUID.randomUUID().toString(),
-                    optionalCarte.get(),
-                    new Timestamp(System.currentTimeMillis()),
-                    paiement.getMontant(),
-                    taux,
-                    paiement.getPays(),
-                    compteCred
-            );
-
-            Paiement saved = paiementService.createPaiement(paiement2save);
-            compteDeb.débiterCompte(paiement.getMontant());
-            compteCred.crediterCompte(paiement.getMontant(), taux);
-
-            if(carte.isVirtual()){
-                carteService.deleteCarte(carte);
+                if(paysDeb != paysCred){
+                    return ResponseEntity.badRequest().build();
+                }
             }
 
-            URI location = linkTo(methodOn(PaiementController.class).getOnePaiementById(userId, accountIban, carteId, saved.getId())).toUri();
+            double taux = 1;
 
-            return ResponseEntity.created(location).build();
+            if(compteDeb.getSolde() >= paiement.getMontant()) {
+
+                Paiement paiement2save = new Paiement(
+                        UUID.randomUUID().toString(),
+                        optionalCarte.get(),
+                        new Timestamp(System.currentTimeMillis()),
+                        paiement.getMontant(),
+                        taux,
+                        paiement.getPays(),
+                        compteCred
+                );
+
+                Paiement saved = paiementService.createPaiement(paiement2save);
+                compteDeb.débiterCompte(paiement.getMontant());
+                compteCred.crediterCompte(paiement.getMontant(), taux);
+
+                if (carte.isVirtual()) {
+                    carteService.deleteCarte(carte);
+                }
+
+                URI location = linkTo(methodOn(PaiementController.class).getOnePaiementById(carte.getAccount().getUser().getId(), carte.getAccount().getIban(), carte.getId(), saved.getId())).toUri();
+
+                return ResponseEntity.created(location).build();
+            }
         }
 
         return ResponseEntity.badRequest().build();

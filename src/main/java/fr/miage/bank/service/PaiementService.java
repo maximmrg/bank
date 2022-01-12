@@ -7,6 +7,7 @@ import fr.miage.bank.repository.PaiementRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -31,5 +32,9 @@ public class PaiementService {
 
     public Paiement createPaiement (Paiement paiement){
         return pRepository.save(paiement);
+    }
+
+    public Optional<Carte> verifyCarte(String numCarte, String cryptoCarte, Date expDate, String nomUser){
+        return cRepository.findByNumeroAndCryptoAndDateExpirationAndAccount_User_Nom(numCarte, cryptoCarte, expDate, nomUser);
     }
 }
