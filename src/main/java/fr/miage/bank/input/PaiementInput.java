@@ -25,14 +25,18 @@ public class PaiementInput {
     @NotNull
     private String ibanCrediteur;
 
+    @NotNull
     @Pattern(regexp = "([0-9]{16})")
-    private String numcarte;
+    private String numCarte;
 
+    @NotNull
     private Date dateExpCarte;
 
+    @NotNull
     @Pattern(regexp = "([0-9]{3})")
     private String cryptoCarte;
 
+    @NotNull
     @Size(min = 3)
     private String nomUser;
 }

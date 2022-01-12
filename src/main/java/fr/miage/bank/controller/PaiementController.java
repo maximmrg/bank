@@ -57,10 +57,9 @@ public class PaiementController {
 
     @PostMapping(value = "/paiements")
     @Transactional
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> createPaiement(@RequestBody @Valid PaiementInput paiement){
 
-        Optional<Carte> optionalCarte = paiementService.verifyCarte(paiement.getNumcarte(), paiement.getCryptoCarte(), paiement.getDateExpCarte(), paiement.getNomUser());
+        Optional<Carte> optionalCarte = paiementService.verifyCarte(paiement.getNumCarte(), paiement.getCryptoCarte(), paiement.getDateExpCarte(), paiement.getNomUser());
 
         //Si la carte existe, donc que les infos sont correctes
         if(optionalCarte.isPresent()){

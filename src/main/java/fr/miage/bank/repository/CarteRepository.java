@@ -14,5 +14,7 @@ public interface CarteRepository extends JpaRepository<Carte, String> {
 
     public Optional<Carte> findByIdAndAccount_Iban(String carteId, String accountId);
 
-    public Optional<Carte> findByNumeroAndCryptoAndDateExpirationAndAccount_User_Nom(String numCarte, String cryptoCarte, Date expCartee, String nomUser);
+    public Optional<Carte> findByNumeroAndCryptoAndDateExpirationAndAccount_User_Nom(String numCarte, String cryptoCarte, Date expCarte, String nomUser);
+
+    public Optional<Carte> findByNumeroAndCryptoAndAccount_User_Nom(String numCarte, String cryptoCarte, String nomUser);
 }
