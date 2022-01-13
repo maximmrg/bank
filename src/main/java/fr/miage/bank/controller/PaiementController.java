@@ -66,6 +66,10 @@ public class PaiementController {
             Carte carte = optionalCarte.get();
             Account compteDeb = carte.getAccount();
 
+            if(carte.isBloque()){
+                return ResponseEntity.badRequest().build();
+            }
+
             Optional<Account> optionalAccount = accountService.findByIban(paiement.getIbanCrediteur());
             Account compteCred = optionalAccount.get();
 

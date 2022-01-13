@@ -58,6 +58,7 @@ public class UserService implements UserDetailsService {
     public void addRoleToUser(User user, String roleName){
         Role role = roleRepository.findByName(roleName);
         user.getRoles().add(role);
+        uRepository.save(user);
     }
 
     public void addRoleToUser(String email, String roleName){

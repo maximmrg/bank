@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.persistence.*;
@@ -22,7 +23,6 @@ public class User implements Serializable {
     private static final long serialVersionUID = 454854941848L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private String id;
 
@@ -32,6 +32,8 @@ public class User implements Serializable {
     private String noPasseport;
     private String numTel;
     private String email;
+
+
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)

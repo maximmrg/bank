@@ -1,0 +1,6 @@
+DELETE FROM Paiement;
+DELETE FROM Operation;
+DELETE FROM Carte;
+DELETE FROM Account;
+DELETE FROM User_roles;
+DELETE FROM User;

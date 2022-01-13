@@ -44,8 +44,9 @@ public class UserController {
     }
 
     @GetMapping(value = "/{userId}")
-    public ResponseEntity<?> getOneUserById(@PathVariable("userId") String id){
-        return Optional.ofNullable(userService.findById(id)).filter(Optional::isPresent)
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    public ResponseEntity<?> getOneUserById(@PathVariable("userId") String userId){
+        return Optional.ofNullable(userService.findById(userId)).filter(Optional::isPresent)
                 .map(i -> ResponseEntity.ok(assembler.toModel(i.get())))
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -85,6 +86,7 @@ public class UserController {
         }
 
         user.setId(userId);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         User result = userService.updateUser(user);
         return ResponseEntity.ok().build();
     }
@@ -118,7 +120,9 @@ public class UserController {
 
             validator.validate(new UserInput(user.getNom(), user.getPrenom(), user.getBirthDate(),
                     user.getNoPasseport(), user.getNumTel(), user.getEmail(), user.getPassword()));
+
             user.setId(userId);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             userService.updateUser(user);
             return ResponseEntity.ok().build();
         }
