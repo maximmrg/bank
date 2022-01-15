@@ -115,26 +115,6 @@ public class CarteController {
         return ResponseEntity.created(location).build();
     }
 
-    /*@PutMapping(value = "/{carteId}")
-    @Transactional
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
-    public ResponseEntity<?> updateCarte(@RequestBody Carte carte, @PathVariable("carteId") String carteId){
-        Optional<Carte> body = Optional.ofNullable(carte);
-
-        if(!body.isPresent()){
-            return ResponseEntity.badRequest().build();
-        }
-
-        if(!carteService.existById(carteId)){
-            return ResponseEntity.notFound().build();
-        }
-
-        carte.setId(carteId);
-        Carte result = carteService.updateCarte(carte);
-
-        return ResponseEntity.ok().build();
-    }*/
-
     @DeleteMapping(value = "/{carteId}")
     @Transactional
     @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
@@ -146,44 +126,6 @@ public class CarteController {
 
         return ResponseEntity.noContent().build();
     }
-
-    /*@PatchMapping(value = "/{carteId}")
-    @Transactional
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
-    public ResponseEntity<?> updateCartePartial(@PathVariable("accountId") String accoundIban,
-                                                @PathVariable("carteId") String carteId,
-                                                @RequestBody Map<Object, Object> fields){
-        Optional<Carte> body = carteService.findByIdAndAccountId(carteId, accoundIban);
-
-        if(body.isPresent()){
-            Carte carte = body.get();
-
-            fields.forEach((f,v) -> {
-                Field field = ReflectionUtils.findField(Carte.class, f.toString());
-                field.setAccessible(true);
-
-                if(field.getType() == Date.class){
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.FRENCH);
-                    try {
-                        ReflectionUtils.setField(field, carte, formatter.parse(v.toString()));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                } else{
-                    ReflectionUtils.setField(field, carte, v);
-                }
-            });
-
-            validator.validate(new CarteInput(carte.isBloque(),
-                    carte.isLocalisation(), carte.getPlafond(), carte.isSansContact(),
-                    carte.isVirtual()));
-
-            carte.setId(carteId);
-            carteService.updateCarte(carte);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.notFound().build();
-    }*/
 
     @PostMapping(value = "/{carteId}/block")
     @Transactional

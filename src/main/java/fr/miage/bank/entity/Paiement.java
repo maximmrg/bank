@@ -13,7 +13,6 @@ import java.sql.Timestamp;
 @Setter
 public class Paiement {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private String id;
 

@@ -99,7 +99,7 @@ public class UserTests {
         when().get("/users/")
                 .then()
                 .assertThat()
-                .body("size()", equalTo(2));
+                .body("_embedded.users.size()", equalTo(2));
     }
 
     @Test

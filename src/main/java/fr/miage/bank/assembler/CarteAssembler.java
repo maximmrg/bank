@@ -8,6 +8,10 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -25,6 +29,18 @@ public class CarteAssembler implements RepresentationModelAssembler<Carte, Entit
 
     @Override
     public CollectionModel<EntityModel<Carte>> toCollectionModel(Iterable<? extends Carte> entities) {
-        return RepresentationModelAssembler.super.toCollectionModel(entities);
+
+        List<EntityModel<Carte>> carteModel = StreamSupport
+                .stream(entities.spliterator(), false)
+                .map(i -> toModel(i))
+                .collect(Collectors.toList());
+
+        EntityModel<Carte> firstCarte = carteModel.get(0);
+        String userId = firstCarte.getContent().getAccount().getUser().getId();
+        String iban = firstCarte.getContent().getAccount().getIban();
+
+        return CollectionModel.of(carteModel,
+                linkTo(methodOn(CarteController.class)
+                        .getAllCartesByAccountId(userId, iban)).withSelfRel());
     }
 }

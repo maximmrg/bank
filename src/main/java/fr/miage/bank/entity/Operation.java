@@ -16,7 +16,6 @@ import java.util.Date;
 @Setter
 public class Operation implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private String id;
 

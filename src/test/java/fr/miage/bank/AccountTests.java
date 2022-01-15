@@ -126,7 +126,7 @@ public class AccountTests {
                 .when().get(basePath)
                 .then()
                 .assertThat()
-                .body("size()", equalTo(2));
+                .body("_embedded.accounts.size()", equalTo(2));
     }
 
     @Test
