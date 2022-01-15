@@ -96,14 +96,6 @@ public class UserTests {
         userService.createUser(user);
         userService.createUser(user2);
 
-       /* Response response = given()
-                .when().get("/users/")
-                .then()
-                .extract().response();
-
-        String jsonAsString = response.asString();
-        assertThat(jsonAsString, containsString("Elouan"));*/
-
         when().get("/users/")
                 .then()
                 .assertThat()
@@ -137,11 +129,6 @@ public class UserTests {
                 .when().get(location).then().statusCode(HttpStatus.SC_OK);
     }
 
-    private String toJsonString(Object o) throws JsonProcessingException {
-        ObjectMapper map = new ObjectMapper();
-        return map.writeValueAsString(o);
-    }
-
     @Test
     public void putTest() throws ParseException, IOException, JSONException, URISyntaxException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
@@ -151,7 +138,9 @@ public class UserTests {
 
         User user = new User(UUID.randomUUID().toString(), "Bristiel", "Elouan",  birthDate, "1234567", "0656897410",
                 "elouan@mail.com", "$argon2id$v=19$m=4096,t=3,p=1$UpZ1oVVeUXwGb4CeqqMeog$aViAk5njkRuPGqY3+gkUNdUCIivAcP2Omvnm/MRBj7U");
+
         userService.createUser(user);
+        userService.addRoleToUser(user, "ROLE_USER");
 
         UserInput userInput = new UserInput("Marigliano", "Maxime", birthDate, "123456", "0102030405", "max@mail.com", "password");
 
@@ -183,8 +172,42 @@ public class UserTests {
     }
 
     @Test
-    public void patchTest() {
+    public void patchTest() throws ParseException, JSONException, IOException, URISyntaxException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
+        String dateInString = "1999-10-18";
+        Date birthDate = formatter.parse(dateInString);
+
+        User user = new User(UUID.randomUUID().toString(), "Bristiel", "Elouan",  birthDate, "1234567", "0656897410",
+                "elouan@mail.com", "$argon2id$v=19$m=4096,t=3,p=1$UpZ1oVVeUXwGb4CeqqMeog$aViAk5njkRuPGqY3+gkUNdUCIivAcP2Omvnm/MRBj7U");
+        userService.createUser(user);
+        userService.addRoleToUser(user, "ROLE_USER");
+
+        String access_token = getToken(user.getEmail(), "password");
+
+        String jsonString = "{" +
+                "\"prenom\" : \"Tom\"" +
+                "}";
+
+        Response resPatch = given()
+                .header("Authorization", "Bearer " + access_token)
+                .body(jsonString)
+                .contentType(ContentType.JSON)
+                .when()
+                .patch("/users/" + user.getId())
+                .then()
+                .extract()
+                .response();
+
+        //Récupération de l'utilisateur modifié
+        Response response = given()
+                .header("Authorization", "Bearer " + access_token)
+                .when().get("/users/" + user.getId())
+                .then()
+                .extract().response();
+
+        String stringResponse = response.asString();
+        assertThat(stringResponse, containsString("Tom"));
     }
 
     private String getToken(String email, String password) throws JSONException, IOException, URISyntaxException {
@@ -207,5 +230,10 @@ public class UserTests {
         String stringRes = response.asString();
         JSONObject jsonRes = new JSONObject(stringRes);
         return jsonRes.getString("access_token");
+    }
+
+    private String toJsonString(Object o) throws JsonProcessingException {
+        ObjectMapper map = new ObjectMapper();
+        return map.writeValueAsString(o);
     }
 }
