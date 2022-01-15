@@ -92,25 +92,6 @@ public class AccountController {
         //return ResponseEntity.ok(saved);
     }
 
-    @PutMapping(value = "/{accountId}")
-    @Transactional
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
-    public ResponseEntity<?> updateAccount(@RequestBody Account account, @PathVariable("userId") String userId, @PathVariable("accountId") String accountIban){
-        Optional<Account> body = Optional.ofNullable(account);
-
-        if(!body.isPresent()) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        if(!accountService.existById(accountIban)){
-            return ResponseEntity.notFound().build();
-        }
-
-        account.setIban(accountIban);
-        Account result = accountService.updateAccount(account);
-        return ResponseEntity.ok().build();
-    }
-
     @PatchMapping(value = "/{accountId}")
     @Transactional
     @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
