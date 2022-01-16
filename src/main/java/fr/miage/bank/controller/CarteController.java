@@ -47,7 +47,7 @@ public class CarteController {
     @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> getAllCartesByAccountId(@PathVariable("userId") String userId, @PathVariable("accountId") String accountId){
         Iterable<Carte> allCartes = carteService.findAllCartesByAccountId(accountId);
-        return ResponseEntity.ok(assembler.toCollectionModel(allCartes));
+        return ResponseEntity.ok(assembler.toCollectionModel(allCartes, userId, accountId));
     }
 
     @GetMapping(value = "/{carteId}")

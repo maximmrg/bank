@@ -1,6 +1,6 @@
 INSERT INTO Role (id, name)
-VALUES(1, 'ROLE_USER');
-VALUES(2, 'ROLE_ADMIN');
+VALUES(1, 'ROLE_USER'),
+(2, 'ROLE_ADMIN');
 
 
 INSERT INTO user (id, nom, prenom, birth_date, no_passeport, num_tel, email, password) VALUES

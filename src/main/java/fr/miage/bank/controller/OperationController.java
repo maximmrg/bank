@@ -44,7 +44,7 @@ public class OperationController {
         } else {
             allOperations = operationService.findAllOperationsByUserIdAndAccountId(userId, accountIban);
         }
-        return ResponseEntity.ok(assembler.toCollectionModel(allOperations));
+        return ResponseEntity.ok(assembler.toCollectionModel(allOperations, userId, accountIban));
     }
 
     @GetMapping(value = "/{operationId}")

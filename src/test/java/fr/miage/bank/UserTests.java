@@ -83,7 +83,7 @@ public class UserTests {
     }
 
     @Test
-    public void getAllTest() throws ParseException {
+    public void getAllTest() throws ParseException, JSONException, IOException, URISyntaxException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
         String dateInString = "1999-10-18";
@@ -99,7 +99,14 @@ public class UserTests {
         userService.createUser(user);
         userService.createUser(user2);
 
-        when().get("/users/")
+        userService.addRoleToUser(user, "ROLE_ADMIN");
+        userService.addRoleToUser(user2, "ROLE_USER");
+
+        String access_token = getToken(user.getEmail(), "password");
+
+        given()
+                .header("Authorization", "Bearer " + access_token)
+                .when().get("/users/")
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .assertThat()

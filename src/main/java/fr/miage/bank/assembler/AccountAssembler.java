@@ -34,19 +34,16 @@ public class AccountAssembler implements RepresentationModelAssembler<Account, E
                 linkTo(methodOn(OperationController.class).getAllOperationsByAccountId(userId, entity.getIban(), null)).withRel("operations"));
     }
 
-    @Override
-    public CollectionModel<EntityModel<Account>> toCollectionModel(Iterable<? extends Account> entities) {
+    public CollectionModel<EntityModel<Account>> toCollectionModel(Iterable<? extends Account> entities, String userId) {
 
         List<EntityModel<Account>> accountModel = StreamSupport
                 .stream(entities.spliterator(), false)
                 .map(i -> toModel(i))
                 .collect(Collectors.toList());
 
-        EntityModel<Account> firstAccount = accountModel.get(0);
-
         return CollectionModel.of(accountModel,
                 linkTo(methodOn(AccountController.class)
-                        .getAllAccountsByUserId(firstAccount.getContent().getUser().getId())).withSelfRel());
+                        .getAllAccountsByUserId(userId)).withSelfRel());
 
     }
 }

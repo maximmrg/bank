@@ -41,7 +41,7 @@ public class AccountController {
     @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> getAllAccountsByUserId(@PathVariable("userId") String userId){
         Iterable<Account> allAccounts = accountService.findAllByUserId(userId);
-        return ResponseEntity.ok(assembler.toCollectionModel(allAccounts));
+        return ResponseEntity.ok(assembler.toCollectionModel(allAccounts, userId));
     }
 
     @GetMapping(value = "/{accountId}")

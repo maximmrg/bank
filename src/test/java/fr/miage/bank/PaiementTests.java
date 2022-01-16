@@ -163,7 +163,7 @@ public class PaiementTests {
                 .when().get(pathPaiements)
                 .then()
                 .assertThat()
-                .body("size()", equalTo(3));
+                .body("_embedded.paiements.size()", equalTo(3));
     }
 
     @Test

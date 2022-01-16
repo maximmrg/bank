@@ -8,6 +8,10 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -27,8 +31,15 @@ public class PaiementAssembler implements RepresentationModelAssembler<Paiement,
                         .getOneCarteByIdAndAccountId(userId, iban, carteId)).withRel("carte"));
     }
 
-    @Override
-    public CollectionModel<EntityModel<Paiement>> toCollectionModel(Iterable<? extends Paiement> entities) {
-        return RepresentationModelAssembler.super.toCollectionModel(entities);
+    public CollectionModel<EntityModel<Paiement>> toCollectionModel(Iterable<? extends Paiement> entities, String userId, String iban, String carteId) {
+
+        List<EntityModel<Paiement>> paiementModel = StreamSupport
+                .stream(entities.spliterator(), false)
+                .map(i -> toModel(i))
+                .collect(Collectors.toList());
+
+        return CollectionModel.of(paiementModel,
+                linkTo(methodOn(PaiementController.class)
+                        .getAllPaiementsByCarteId(userId, iban, carteId)).withSelfRel());
     }
 }

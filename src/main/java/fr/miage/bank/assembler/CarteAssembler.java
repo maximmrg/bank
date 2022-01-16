@@ -27,17 +27,12 @@ public class CarteAssembler implements RepresentationModelAssembler<Carte, Entit
                         .getOneAccountById(userId, entity.getAccount().getIban())).withRel("account"));
     }
 
-    @Override
-    public CollectionModel<EntityModel<Carte>> toCollectionModel(Iterable<? extends Carte> entities) {
+    public CollectionModel<EntityModel<Carte>> toCollectionModel(Iterable<? extends Carte> entities, String userId, String iban) {
 
         List<EntityModel<Carte>> carteModel = StreamSupport
                 .stream(entities.spliterator(), false)
                 .map(i -> toModel(i))
                 .collect(Collectors.toList());
-
-        EntityModel<Carte> firstCarte = carteModel.get(0);
-        String userId = firstCarte.getContent().getAccount().getUser().getId();
-        String iban = firstCarte.getContent().getAccount().getIban();
 
         return CollectionModel.of(carteModel,
                 linkTo(methodOn(CarteController.class)

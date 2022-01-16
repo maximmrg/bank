@@ -46,7 +46,7 @@ public class PaiementController {
     @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> getAllPaiementsByCarteId(@PathVariable("userId") String userId, @PathVariable("accountIban") String iban, @PathVariable("carteId") String carteId){
         Iterable<Paiement> allPaiements = paiementService.findAllByCarteId(carteId);
-        return ResponseEntity.ok(allPaiements);
+        return ResponseEntity.ok(assembler.toCollectionModel(allPaiements, userId,iban, carteId));
     }
 
     @GetMapping(value = "/users/{userId}/accounts/{accountIban}/cartes/{carteId}/paiements/{paiementId}")
