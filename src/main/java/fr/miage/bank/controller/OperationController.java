@@ -35,7 +35,7 @@ public class OperationController {
     private final OperationAssembler assembler;
 
     @GetMapping
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> getAllOperationsByAccountId(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @RequestParam( required = false, name = "categorie") Optional<String> categ){
         Iterable<Operation> allOperations;
 
@@ -48,7 +48,7 @@ public class OperationController {
     }
 
     @GetMapping(value = "/{operationId}")
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> getOneOperationById(@PathVariable("userId") String userId, @PathVariable("accountId") String accountId, @PathVariable("operationId") String operationId){
         return Optional.ofNullable(operationService.findByIdAndCompteOwnerId(operationId, accountId)).filter(Optional::isPresent)
                 .map(i -> ResponseEntity.ok(assembler.toModel(i.get())))

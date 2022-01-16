@@ -43,14 +43,14 @@ public class PaiementController {
     private final PaiementValidator validator;
 
     @GetMapping("/users/{userId}/accounts/{accountIban}/cartes/{carteId}/paiements")
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> getAllPaiementsByCarteId(@PathVariable("userId") String userId, @PathVariable("accountIban") String iban, @PathVariable("carteId") String carteId){
         Iterable<Paiement> allPaiements = paiementService.findAllByCarteId(carteId);
         return ResponseEntity.ok(assembler.toCollectionModel(allPaiements, userId,iban, carteId));
     }
 
     @GetMapping(value = "/users/{userId}/accounts/{accountIban}/cartes/{carteId}/paiements/{paiementId}")
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> getOnePaiementById(@PathVariable("userId") String userId, @PathVariable("accountIban") String iban, @PathVariable("carteId") String carteId,
                                                 @PathVariable("paiementId") String paiementId){
         return Optional.ofNullable(paiementService.findByIdAndCarteIdAndAccountId(paiementId, carteId, iban)).filter(Optional::isPresent)
@@ -71,6 +71,15 @@ public class PaiementController {
 
             if(carte.isBloque() || carte.isDeleted()){
                 return ResponseEntity.badRequest().build();
+            }
+
+            String paysPaiement = paiement.getPays().toLowerCase();
+            String paysCarte = carte.getAccount().getPays().toLowerCase();
+
+            if(carte.isLocalisation()){
+                if(paysPaiement != paysCarte){
+                    return ResponseEntity.badRequest().build();
+                }
             }
 
             Optional<Account> optionalAccount = accountService.findByIban(paiement.getIbanCrediteur());

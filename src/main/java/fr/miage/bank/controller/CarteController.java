@@ -44,14 +44,14 @@ public class CarteController {
 
 
     @GetMapping
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> getAllCartesByAccountId(@PathVariable("userId") String userId, @PathVariable("accountId") String accountId){
         Iterable<Carte> allCartes = carteService.findAllCartesByAccountId(accountId);
         return ResponseEntity.ok(assembler.toCollectionModel(allCartes, userId, accountId));
     }
 
     @GetMapping(value = "/{carteId}")
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> getOneCarteByIdAndAccountId(@PathVariable("userId") String userId, @PathVariable("accountId") String accountId, @PathVariable("carteId") String carteId){
         return Optional.ofNullable(carteService.findByIdAndAccountId(carteId, accountId)).filter(Optional::isPresent)
                 .map(i -> ResponseEntity.ok(assembler.toModel(i.get())))
@@ -60,7 +60,7 @@ public class CarteController {
 
     @PostMapping
     @Transactional
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> createCarte(@RequestBody @Valid CarteInput carte, @PathVariable("userId") String userId, @PathVariable("accountId") String accountId){
         Optional<Account> optionalAccount = accountService.findById(accountId);
 
@@ -104,7 +104,7 @@ public class CarteController {
 
     @DeleteMapping(value = "/{carteId}")
     @Transactional
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> deleteCarte(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @PathVariable("carteId") String carteId){
         Optional<Carte> carte = carteService.findByIdAndAccountId(carteId, accountIban);
         if(carte.isPresent()){
@@ -116,7 +116,7 @@ public class CarteController {
 
     @PostMapping(value = "/{carteId}/block")
     @Transactional
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> blockCarte(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @PathVariable("carteId") String carteId) {
 
         Optional<Account> optionAccount = accountService.findByUserIdAndIban(userId, accountIban);
@@ -137,7 +137,7 @@ public class CarteController {
 
     @PostMapping(value = "/{carteId}/activeLocalisation")
     @Transactional
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> activeLocalisation(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @PathVariable("carteId") String carteId){
         Optional<Account> optionAccount = accountService.findByUserIdAndIban(userId, accountIban);
         if(!optionAccount.isPresent()){
@@ -157,7 +157,7 @@ public class CarteController {
 
     @PostMapping(value = "/{carteId}/setPlafond")
     @Transactional
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> setPlafond(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @PathVariable("carteId") String carteId,
                                            @RequestParam("plafond") int plafond) {
 
@@ -179,7 +179,7 @@ public class CarteController {
 
     @PostMapping(value = "/{carteId}/setContact")
     @Transactional
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> setSansContact(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @PathVariable("carteId") String carteId){
 
         Optional<Account> optionAccount = accountService.findByUserIdAndIban(userId, accountIban);
@@ -200,7 +200,7 @@ public class CarteController {
 
     @PostMapping(value = "/{carteId}/unsetContact")
     @Transactional
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> unsetSansContact(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @PathVariable("carteId") String carteId){
 
         Optional<Account> optionAccount = accountService.findByUserIdAndIban(userId, accountIban);

@@ -67,6 +67,7 @@ public class PaiementTests {
     Account accountCredTest;
     Carte carteTest;
     Carte carteVirtualTest;
+    Carte carteLocalisationTest;
 
     String basePath;
     String pathAccount;
@@ -115,8 +116,12 @@ public class PaiementTests {
         Carte carteVirtual = new Carte(UUID.randomUUID().toString(), "1234567890123455", "1234", "123", false, false, 50, false, true, accountTest);
         carteService.createCarte(carteVirtual);
 
+        Carte carteLocalisation = new Carte(UUID.randomUUID().toString(), "1234522890123455", "1234", "123", false, true, 50, false, false, accountTest);
+        carteService.createCarte(carteLocalisation);
+
         this.carteTest = carte;
         this.carteVirtualTest = carteVirtual;
+        this.carteLocalisationTest = carteLocalisation;
 
         this.basePath = "/paiements";
         this.pathAccount = "/users/" + user.getId() + "/accounts/" + accountTest.getIban();
@@ -321,5 +326,41 @@ public class PaiementTests {
 
         JSONObject jsonRes = new JSONObject(resVirtual.asString());
         assertThat(jsonRes.get("deleted"), equalTo(true));
+    }
+
+    @Test
+    public void testWithLocalisationWrong() throws JSONException, IOException, URISyntaxException {
+        PaiementInput paiementInput = new PaiementInput(50, "Italie", accountCredTest.getIban(),
+                1, carteLocalisationTest.getNumero(), carteLocalisationTest.getCrypto(), userTest.getNom(),
+                "Pizza", "commerce");
+
+        String access_token = getToken(userTest.getEmail(), "password");
+
+        Response response = given()
+                .body(toJsonString(paiementInput))
+                .contentType(ContentType.JSON)
+                .when()
+                .post(basePath)
+                .then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .extract().response();
+    }
+
+    @Test
+    public void testWithLocalisationRight() throws JSONException, IOException, URISyntaxException {
+        PaiementInput paiementInput = new PaiementInput(50, "France", accountCredTest.getIban(),
+                1, carteLocalisationTest.getNumero(), carteLocalisationTest.getCrypto(), userTest.getNom(),
+                "Pizza", "commerce");
+
+        String access_token = getToken(userTest.getEmail(), "password");
+
+        Response response = given()
+                .body(toJsonString(paiementInput))
+                .contentType(ContentType.JSON)
+                .when()
+                .post(basePath)
+                .then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .extract().response();
     }
 }

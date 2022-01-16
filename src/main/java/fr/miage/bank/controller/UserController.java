@@ -45,7 +45,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/{userId}")
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> getOneUserById(@PathVariable("userId") String userId){
         return Optional.ofNullable(userService.findById(userId)).filter(Optional::isPresent)
                 .map(i -> ResponseEntity.ok(assembler.toModel(i.get())))
@@ -79,7 +79,7 @@ public class UserController {
 
     @PutMapping(value = "/{userId}")
     @Transactional
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateUser(@RequestBody User user, @PathVariable("userId") String userId){
         Optional<User> body = Optional.ofNullable(user);
 
@@ -107,7 +107,7 @@ public class UserController {
 
     @PatchMapping(value = "/{userId}")
     @Transactional
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateUserPartial(@PathVariable("userId") String userId,
                                                @RequestBody Map<Object, Object> fields){
 

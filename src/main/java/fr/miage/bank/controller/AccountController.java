@@ -38,14 +38,14 @@ public class AccountController {
     private final AccountValidator validator;
 
     @GetMapping
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> getAllAccountsByUserId(@PathVariable("userId") String userId){
         Iterable<Account> allAccounts = accountService.findAllByUserId(userId);
         return ResponseEntity.ok(assembler.toCollectionModel(allAccounts, userId));
     }
 
     @GetMapping(value = "/{accountId}")
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> getOneAccountById(@PathVariable("userId") String userId, @PathVariable("accountId") String iban){
         return Optional.ofNullable(accountService.findByUserIdAndIban(userId, iban)).filter(Optional::isPresent)
                 .map(i -> ResponseEntity.ok(assembler.toModel(i.get())))
@@ -54,7 +54,7 @@ public class AccountController {
 
     @PostMapping
     @Transactional
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> saveAccount(@PathVariable("userId") String userId, @RequestBody @Valid AccountInput account){
 
         Optional<User> optionUser = userService.findById(userId);
@@ -85,18 +85,13 @@ public class AccountController {
 
         Account saved = accountService.createAccount(account2save);
 
-        //URI location = linkTo(AccountController.class).slash(saved.getIban()).toUri();
-        //return ResponseEntity.created(location).build();
-
         URI location = linkTo(methodOn(AccountController.class).getOneAccountById(userId, saved.getIban())).toUri();
         return ResponseEntity.created(location).build();
-
-        //return ResponseEntity.ok(saved);
     }
 
     @PatchMapping(value = "/{accountId}")
     @Transactional
-    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateAccountPartiel(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban,
                                                   @RequestBody Map<Object, Object> fields) {
 
