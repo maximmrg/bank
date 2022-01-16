@@ -38,6 +38,7 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
 
     @GetMapping
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> getAllUsers(){
         Iterable<User> allUsers = userService.findAll();
         return ResponseEntity.ok(assembler.toCollectionModel(allUsers));
