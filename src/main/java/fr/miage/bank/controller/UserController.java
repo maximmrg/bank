@@ -65,10 +65,15 @@ public class UserController {
                 passwordEncoder.encode(user.getPassword())
         );
 
-        User saved = userService.createUser(user2save);
+        if(!userService.existMail(user.getEmail())) {
+            User saved = userService.createUser(user2save);
 
-        URI location = linkTo(UserController.class).slash(saved.getId()).toUri();
-        return ResponseEntity.created(location).build();
+            URI location = linkTo(UserController.class).slash(saved.getId()).toUri();
+            return ResponseEntity.created(location).build();
+        }
+        else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping(value = "/{userId}")
@@ -85,10 +90,18 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
 
+        Optional<User> optBddUser = userService.findById(userId);
+        User bddUser = optBddUser.get();
+
+        if(bddUser.getEmail() != user.getEmail() && userService.existMail(user.getEmail())) {
+            return ResponseEntity.badRequest().build();
+        }
+
         user.setId(userId);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User result = userService.updateUser(user);
         return ResponseEntity.ok().build();
+
     }
 
     @PatchMapping(value = "/{userId}")
@@ -101,6 +114,14 @@ public class UserController {
 
         if(body.isPresent()){
             User user = body.get();
+
+            String oldMail = user.getEmail();
+
+            if(fields.containsKey("email")) {
+                if (oldMail != fields.get("email") && userService.existMail(user.getEmail())) {
+                    return ResponseEntity.badRequest().build();
+                }
+            }
 
             fields.forEach((f,v) -> {
                 Field field = ReflectionUtils.findField(User.class, f.toString());
@@ -123,6 +144,9 @@ public class UserController {
 
             user.setId(userId);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+
+
             userService.updateUser(user);
             return ResponseEntity.ok().build();
         }

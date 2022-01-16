@@ -186,6 +186,7 @@ public class AccountTests {
 
         //Récupération de l'objet
         Response response = given()
+                .header("Authorization", "Bearer " + access_token)
                 .when()
                 .get(basePath)
                 .then()

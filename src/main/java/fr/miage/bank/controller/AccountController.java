@@ -38,12 +38,14 @@ public class AccountController {
     private final AccountValidator validator;
 
     @GetMapping
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> getAllAccountsByUserId(@PathVariable("userId") String userId){
         Iterable<Account> allAccounts = accountService.findAllByUserId(userId);
         return ResponseEntity.ok(assembler.toCollectionModel(allAccounts));
     }
 
     @GetMapping(value = "/{accountId}")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> getOneAccountById(@PathVariable("userId") String userId, @PathVariable("accountId") String iban){
         return Optional.ofNullable(accountService.findByUserIdAndIban(userId, iban)).filter(Optional::isPresent)
                 .map(i -> ResponseEntity.ok(assembler.toModel(i.get())))

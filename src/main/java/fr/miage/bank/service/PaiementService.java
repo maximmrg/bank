@@ -38,24 +38,14 @@ public class PaiementService {
         return pRepository.save(paiement);
     }
 
-    public Optional<Carte> verifyCarte(String numCarte, String cryptoCarte, Date expDate, String nomUser){
+    public Optional<Carte> verifyCarte(String numCarte, String cryptoCarte, String nomUser){
+
+        Iterable<Carte> list = cRepository.findAll();
+
         Optional<Carte> optCarte =  cRepository.findByNumeroAndCryptoAndAccount_User_Nom(numCarte, cryptoCarte, nomUser);
 
         if(optCarte.isPresent()){
-            Carte carte = optCarte.get();
-
-            try{
-                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                Date date1 = formatter.parse(formatter.format(carte.getDateExpiration()));
-                Date date2 = formatter.parse(formatter.format(expDate));
-
-                if(date1.equals(date2)){
-                    return optCarte;
-                }
-            }
-            catch (ParseException e){
-                return Optional.empty();
-            }
+            return optCarte;
         }
 
         return Optional.empty();

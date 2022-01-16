@@ -37,6 +37,11 @@ public class CarteService {
         cRepository.delete(carte);
     }
 
+    public void deleteVirtualCarte(Carte carte){
+        carte.setDeleted(true);
+        cRepository.save(carte);
+    }
+
     public Carte blockCarte(Carte carte){
         carte.setBloque(true);
         return cRepository.save(carte);

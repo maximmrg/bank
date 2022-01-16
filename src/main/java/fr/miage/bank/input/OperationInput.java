@@ -21,6 +21,10 @@ public class OperationInput {
     private double montant;
 
     @NotNull
+    @Min(0)
+    private double taux;
+
+    @NotNull
     private String compteCrediteurIban;
 
     @Size(min = 3)

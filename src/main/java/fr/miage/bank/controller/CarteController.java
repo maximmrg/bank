@@ -95,20 +95,7 @@ public class CarteController {
                 account
         );
 
-        /*if(carte.isVirtual()){
-            Date expirationDate = new Date();
-            Calendar c = Calendar.getInstance();
-            c.setTime(expirationDate);
-            c.add(Calendar.DATE, 15);
-            expirationDate = c.getTime();
-
-            carte2save.setDateExpiration(expirationDate);
-        }*/
-
         Carte saved = carteService.createCarte(carte2save);
-
-        //Link location = linkTo(CarteController.class).slash(saved.getId()).slash(accountId).withSelfRel();
-        //return ResponseEntity.ok(location.withSelfRel());
 
         URI location = linkTo(methodOn(CarteController.class).getOneCarteByIdAndAccountId(userId, accountId, saved.getId())).toUri();
 

@@ -186,7 +186,7 @@ public class OperationTests {
 
     @Test
     public void postTest () throws JSONException, IOException, URISyntaxException {
-        OperationInput operationInput = new OperationInput("Loyer", 350, accountCredTest.getIban(), "Commerçant");
+        OperationInput operationInput = new OperationInput("Loyer", 350, 1,accountCredTest.getIban(), "Commerçant");
 
         String access_token = getToken(userTest.getEmail(), "password");
 
@@ -210,7 +210,7 @@ public class OperationTests {
 
     @Test
     public void postDebiterTest() throws JSONException, IOException, URISyntaxException {
-        OperationInput operationInput = new OperationInput("Loyer", 350, accountCredTest.getIban(), "Commerçant");
+        OperationInput operationInput = new OperationInput("Loyer", 350,1 , accountCredTest.getIban(), "Commerçant");
 
         String access_token = getToken(userTest.getEmail(), "password");
 
@@ -238,7 +238,7 @@ public class OperationTests {
 
     @Test
     public void postWithNoSolde() throws IOException, JSONException, URISyntaxException {
-        OperationInput operationInput = new OperationInput("Loyer", 600, accountCredTest.getIban(), "Commerçant");
+        OperationInput operationInput = new OperationInput("Loyer", 600,1, accountCredTest.getIban(), "Commerçant");
 
         String access_token = getToken(userTest.getEmail(), "password");
 

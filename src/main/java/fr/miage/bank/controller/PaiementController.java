@@ -20,6 +20,10 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -47,7 +51,6 @@ public class PaiementController {
 
     @GetMapping(value = "/users/{userId}/accounts/{accountIban}/cartes/{carteId}/paiements/{paiementId}")
     @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
-
     public ResponseEntity<?> getOnePaiementById(@PathVariable("userId") String userId, @PathVariable("accountIban") String iban, @PathVariable("carteId") String carteId,
                                                 @PathVariable("paiementId") String paiementId){
         return Optional.ofNullable(paiementService.findByIdAndCarteIdAndAccountId(paiementId, carteId, iban)).filter(Optional::isPresent)
@@ -57,16 +60,16 @@ public class PaiementController {
 
     @PostMapping(value = "/paiements")
     @Transactional
-    public ResponseEntity<?> createPaiement(@RequestBody @Valid PaiementInput paiement){
+    public ResponseEntity<?> createPaiement(@RequestBody @Valid PaiementInput paiement) throws ParseException {
 
-        Optional<Carte> optionalCarte = paiementService.verifyCarte(paiement.getNumCarte(), paiement.getCryptoCarte(), paiement.getDateExpCarte(), paiement.getNomUser());
+        Optional<Carte> optionalCarte = paiementService.verifyCarte(paiement.getNumCarte(), paiement.getCryptoCarte(), paiement.getNomUser());
 
         //Si la carte existe, donc que les infos sont correctes
         if(optionalCarte.isPresent()){
             Carte carte = optionalCarte.get();
             Account compteDeb = carte.getAccount();
 
-            if(carte.isBloque()){
+            if(carte.isBloque() || carte.isDeleted()){
                 return ResponseEntity.badRequest().build();
             }
 
@@ -82,26 +85,26 @@ public class PaiementController {
                 }
             }
 
-            double taux = 1;
-
-            if(compteDeb.getSolde() >= paiement.getMontant()) {
+            if(compteDeb.getSolde() >= paiement.getMontant() && carte.getPlafond() >= paiement.getMontant()) {
 
                 Paiement paiement2save = new Paiement(
                         UUID.randomUUID().toString(),
-                        optionalCarte.get(),
-                        new Timestamp(System.currentTimeMillis()),
+                        carte,
                         paiement.getMontant(),
-                        taux,
                         paiement.getPays(),
-                        compteCred
-                );
+                        compteCred,
+                        paiement.getTaux(),
+                        new Timestamp(System.currentTimeMillis()),
+                        paiement.getLabel(),
+                        paiement.getCateg()
+                        );
 
                 Paiement saved = paiementService.createPaiement(paiement2save);
                 accountService.debiterAccount(compteDeb, paiement.getMontant());
-                accountService.crediterAccount(compteCred, paiement.getMontant(), taux);
+                accountService.crediterAccount(compteCred, paiement.getMontant(), paiement.getTaux());
 
                 if (carte.isVirtual()) {
-                    carteService.deleteCarte(carte);
+                    carteService.deleteVirtualCarte(carte);
                 }
 
                 URI location = linkTo(methodOn(PaiementController.class).getOnePaiementById(carte.getAccount().getUser().getId(), carte.getAccount().getIban(), carte.getId(), saved.getId())).toUri();

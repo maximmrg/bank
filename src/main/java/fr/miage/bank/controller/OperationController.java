@@ -9,6 +9,7 @@ import fr.miage.bank.service.OperationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +35,7 @@ public class OperationController {
     private final OperationAssembler assembler;
 
     @GetMapping
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> getAllOperationsByAccountId(@PathVariable("userId") String userId, @PathVariable("accountId") String accountIban, @RequestParam( required = false, name = "categorie") Optional<String> categ){
         Iterable<Operation> allOperations;
 
@@ -46,6 +48,7 @@ public class OperationController {
     }
 
     @GetMapping(value = "/{operationId}")
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> getOneOperationById(@PathVariable("userId") String userId, @PathVariable("accountId") String accountId, @PathVariable("operationId") String operationId){
         return Optional.ofNullable(operationService.findByIdAndCompteOwnerId(operationId, accountId)).filter(Optional::isPresent)
                 .map(i -> ResponseEntity.ok(assembler.toModel(i.get())))
@@ -54,6 +57,7 @@ public class OperationController {
 
     @PostMapping
     @Transactional
+    @PreAuthorize("hasPermission(#userId, 'User', 'MANAGE_USER')")
     public ResponseEntity<?> createOperation(@RequestBody @Valid OperationInput operation, @PathVariable("userId") String userId, @PathVariable("accountId") String accountId){
         Optional<Account> optionalAccountDeb = accountService.findById(accountId);
         Account accountDeb = optionalAccountDeb.get();
@@ -61,7 +65,7 @@ public class OperationController {
         Optional<Account> optionalAccountCred = accountService.findByIban(operation.getCompteCrediteurIban());
         Account accountCred = optionalAccountCred.get();
 
-        double taux = 1;
+        double taux = operation.getTaux();
 
         if(accountDeb.getSolde() >= operation.getMontant()) {
 
@@ -76,19 +80,7 @@ public class OperationController {
                     operation.getCateg()
             );
 
-            /*Operation operation2saveCred = new Operation(
-                    UUID.randomUUID().toString(),
-                    new Timestamp(System.currentTimeMillis()),
-                    operation.getLibelle(),
-                    operation.getMontant(),
-                    taux,
-                    accountCred,
-                    accountDeb,
-                    operation.getCateg()
-            );*/
-
             Operation saved = operationService.createOperation(operation2save);
-            //Operation savedCred = operationService.createOperation(operation2saveCred);
             accountService.debiterAccount(accountDeb, operation.getMontant());
             accountService.crediterAccount(accountCred, operation.getMontant(), taux );
 

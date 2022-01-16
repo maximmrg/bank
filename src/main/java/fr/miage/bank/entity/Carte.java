@@ -34,6 +34,8 @@ public class Carte {
     @JoinColumn(name = "account_iban")
     private Account account;
 
+    public boolean deleted;
+
     public Carte(String id, String numero, String code, String crypto, boolean bloque, boolean localisation, double plafond, boolean sansContact, boolean virtual, Account account) {
         this.id = id;
         this.numero = numero;
@@ -45,5 +47,21 @@ public class Carte {
         this.sansContact = sansContact;
         this.virtual = virtual;
         this.account = account;
+        this.deleted = false;
+    }
+
+    public Carte(String id, String numero, String code, String crypto, boolean bloque, boolean localisation, double plafond, boolean sansContact, boolean virtual, Date dateExpiration, Account account) {
+        this.id = id;
+        this.numero = numero;
+        this.code = code;
+        this.crypto = crypto;
+        this.bloque = bloque;
+        this.localisation = localisation;
+        this.plafond = plafond;
+        this.sansContact = sansContact;
+        this.virtual = virtual;
+        this.dateExpiration = dateExpiration;
+        this.account = account;
+        this.deleted = false;
     }
 }

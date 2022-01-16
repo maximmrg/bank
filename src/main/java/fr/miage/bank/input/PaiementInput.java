@@ -26,11 +26,11 @@ public class PaiementInput {
     private String ibanCrediteur;
 
     @NotNull
-    @Pattern(regexp = "([0-9]{16})")
-    private String numCarte;
+    private double taux;
 
     @NotNull
-    private Date dateExpCarte;
+    @Pattern(regexp = "([0-9]{16})")
+    private String numCarte;
 
     @NotNull
     @Pattern(regexp = "([0-9]{3})")
@@ -39,4 +39,10 @@ public class PaiementInput {
     @NotNull
     @Size(min = 3)
     private String nomUser;
+
+    @NotNull
+    private String label;
+
+    @NotNull
+    private String categ;
 }

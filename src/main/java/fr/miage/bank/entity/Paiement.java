@@ -19,13 +19,17 @@ public class Paiement {
     @ManyToOne
     private Carte carte;
 
-    private Timestamp date;
     private double montant;
-    private double taux;
 
     private String pays;
 
     @ManyToOne
     private Account compteCrediteur;
 
+    private double taux;
+
+    private Timestamp date;
+
+    private String label;
+    private String categ;
 }

@@ -216,4 +216,38 @@ public class UserTests {
         String stringResponse = response.asString();
         assertThat(stringResponse, containsString("Tom"));
     }
+
+    @Test
+    public void PatchWithExistMail() throws JSONException, IOException, URISyntaxException, ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+
+        String dateInString = "1999-10-18";
+        Date birthDate = formatter.parse(dateInString);
+
+        User user = new User(UUID.randomUUID().toString(), "Bristiel", "Elouan",  birthDate, "1234567", "0656897410",
+                "elouan@mail.com", "$argon2id$v=19$m=4096,t=3,p=1$UpZ1oVVeUXwGb4CeqqMeog$aViAk5njkRuPGqY3+gkUNdUCIivAcP2Omvnm/MRBj7U");
+        userService.createUser(user);
+        userService.addRoleToUser(user, "ROLE_USER");
+
+        User user2 = new User(UUID.randomUUID().toString(), "Marigliano", "Maxime",  birthDate, "123456", "0656897410",
+                "maxime@mail.com", "$argon2id$v=19$m=4096,t=3,p=1$UpZ1oVVeUXwGb4CeqqMeog$aViAk5njkRuPGqY3+gkUNdUCIivAcP2Omvnm/MRBj7U");
+        userService.createUser(user2);
+
+        String access_token = getToken(user.getEmail(), "password");
+
+        String jsonString = "{" +
+                "\"email\" : \"maxime@mail.com\"" +
+                "}";
+
+        Response resPatch = given()
+                .header("Authorization", "Bearer " + access_token)
+                .body(jsonString)
+                .contentType(ContentType.JSON)
+                .when()
+                .patch("/users/" + user.getId())
+                .then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .extract()
+                .response();
+    }
 }
