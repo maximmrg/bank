@@ -31,6 +31,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
+import static fr.miage.bank.ConfigMethods.getToken;
+import static fr.miage.bank.ConfigMethods.toJsonString;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -140,7 +142,7 @@ public class AccountTests {
 
         Response response = given()
                 .header("Authorization", "Bearer " + access_token)
-                .body(this.toJsonString(accountInput))
+                .body(toJsonString(accountInput))
                 .contentType(ContentType.JSON)
                 .when()
                 .post(basePath)
@@ -193,33 +195,4 @@ public class AccountTests {
         String stringResponse = response.asString();
         assertThat(stringResponse, containsString("123456"));
     }
-
-
-    private String getToken(String email, String password) throws JSONException, IOException, URISyntaxException {
-        JSONObject json = new JSONObject();
-        json.put("email", email);
-        json.put("password", password);
-
-        String json_body = String.format("email=%s&password=%s", email, "password");
-
-        Response response = given()
-                .with()
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .body(json_body)
-                .when()
-                .post("/login")
-                .then()
-                .extract()
-                .response();
-
-        String stringRes = response.asString();
-        JSONObject jsonRes = new JSONObject(stringRes);
-        return jsonRes.getString("access_token");
-    }
-
-    private String toJsonString(Object o) throws JsonProcessingException {
-        ObjectMapper map = new ObjectMapper();
-        return map.writeValueAsString(o);
-    }
-
 }
