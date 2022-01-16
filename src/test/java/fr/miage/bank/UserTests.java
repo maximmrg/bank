@@ -73,6 +73,7 @@ public class UserTests {
                 .header("Authorization", "Bearer " + access_token)
                 .when().get("/users/" + user.getId())
                 .then()
+                .statusCode(HttpStatus.SC_OK)
                 .extract().response();
 
         String jsonAsString = response.asString();
@@ -98,6 +99,7 @@ public class UserTests {
 
         when().get("/users/")
                 .then()
+                .statusCode(HttpStatus.SC_OK)
                 .assertThat()
                 .body("_embedded.users.size()", equalTo(2));
     }
@@ -154,6 +156,7 @@ public class UserTests {
                 .when()
                 .put("/users/" + user.getId())
                 .then()
+                .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
 
@@ -196,6 +199,7 @@ public class UserTests {
                 .when()
                 .patch("/users/" + user.getId())
                 .then()
+                .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
 
@@ -204,6 +208,7 @@ public class UserTests {
                 .header("Authorization", "Bearer " + access_token)
                 .when().get("/users/" + user.getId())
                 .then()
+                .statusCode(HttpStatus.SC_OK)
                 .extract().response();
 
         String stringResponse = response.asString();

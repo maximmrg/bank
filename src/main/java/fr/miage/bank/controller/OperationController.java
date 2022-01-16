@@ -13,11 +13,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequiredArgsConstructor
@@ -88,7 +92,8 @@ public class OperationController {
             accountService.debiterAccount(accountDeb, operation.getMontant());
             accountService.crediterAccount(accountCred, operation.getMontant(), taux );
 
-            return ResponseEntity.ok(saved);
+            URI location = linkTo(methodOn(OperationController.class).getOneOperationById(userId, accountId, saved.getId())).toUri();
+            return ResponseEntity.created(location).build();
         }
 
         return ResponseEntity.badRequest().build();

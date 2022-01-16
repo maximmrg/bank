@@ -10,9 +10,9 @@ import java.util.Optional;
 
 @Repository
 public interface OperationRepository extends JpaRepository<Operation, String> {
-    public Iterable<Operation> findAllByCompteCrediteur_User_IdAndCompteCrediteur_Iban(String userId, String iban);
+    public Iterable<Operation> findAllByCompteDebiteur_User_IdAndCompteDebiteur_Iban(String userId, String iban);
 
-    public Iterable<Operation> findAllByCompteCrediteurAndCateg(Account account_creditor, String categ);
+    public Iterable<Operation> findAllByCompteDebiteurAndCateg(Account account_creditor, String categ);
 
-    public Optional<Operation> findByIdAndCompteCrediteur_Iban(String operationId, String accountId);
+    public Optional<Operation> findByIdAndCompteDebiteur_Iban(String operationId, String accountId);
 }

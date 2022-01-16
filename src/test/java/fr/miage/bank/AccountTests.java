@@ -95,6 +95,7 @@ public class AccountTests {
                 .when()
                 .get(basePath + account.getIban())
                 .then()
+                .statusCode(HttpStatus.SC_OK)
                 .extract().response();
 
         String jsonString = response.asString();
@@ -125,6 +126,7 @@ public class AccountTests {
                 .header("Authorization", "Bearer " + access_token)
                 .when().get(basePath)
                 .then()
+                .statusCode(HttpStatus.SC_OK)
                 .assertThat()
                 .body("_embedded.accounts.size()", equalTo(2));
     }
@@ -143,6 +145,7 @@ public class AccountTests {
                 .when()
                 .post(basePath)
                 .then()
+                .statusCode(HttpStatus.SC_CREATED)
                 .extract().response();
 
         String location = response.getHeader("Location");
@@ -176,6 +179,7 @@ public class AccountTests {
                 .when()
                 .patch(basePath + account.getIban())
                 .then()
+                .statusCode(HttpStatus.SC_OK)
                 .extract().response();
 
         //Récupération de l'objet

@@ -107,6 +107,7 @@ public class CarteTests {
                 .when()
                 .get(basePath + carte.getId())
                 .then()
+                .statusCode(HttpStatus.SC_OK)
                 .extract().response();
 
         String jsonString = response.asString();;
@@ -126,17 +127,11 @@ public class CarteTests {
 
         String access_token = getToken(userTest.getEmail(), "password");
 
-        Response resAll = given()
-                .header("Authorization", "Bearer " + access_token)
-                .when()
-                .get(basePath)
-                .then()
-                .extract().response();
-
         given()
                 .header("Authorization", "Bearer " + access_token)
                 .when().get(basePath)
                 .then()
+                .statusCode(HttpStatus.SC_OK)
                 .assertThat()
                 .body("_embedded.cartes.size()", equalTo(3));
     }
@@ -154,6 +149,7 @@ public class CarteTests {
                 .when()
                 .post(basePath)
                 .then()
+                .statusCode(HttpStatus.SC_CREATED)
                 .extract().response();
 
         String location = response.getHeader("Location");
@@ -177,6 +173,7 @@ public class CarteTests {
                 .when()
                 .post(basePath + carte.getId() + "/block")
                 .then()
+                .statusCode(HttpStatus.SC_NO_CONTENT)
                 .extract().response();
 
         Response response = given()
@@ -184,6 +181,7 @@ public class CarteTests {
                 .when()
                 .get(basePath + carte.getId())
                 .then()
+                .statusCode(HttpStatus.SC_OK)
                 .extract().response();
 
         JSONObject jsonRes = new JSONObject(response.asString());
@@ -202,6 +200,7 @@ public class CarteTests {
                 .when()
                 .post(basePath + carte.getId() + "/activeLocalisation")
                 .then()
+                .statusCode(HttpStatus.SC_NO_CONTENT)
                 .extract().response();
 
         Response response = given()
@@ -209,6 +208,7 @@ public class CarteTests {
                 .when()
                 .get(basePath + carte.getId())
                 .then()
+                .statusCode(HttpStatus.SC_OK)
                 .extract().response();
 
         JSONObject jsonRes = new JSONObject(response.asString());
@@ -227,6 +227,7 @@ public class CarteTests {
                 .when()
                 .post(basePath + carte.getId() + "/setContact")
                 .then()
+                .statusCode(HttpStatus.SC_NO_CONTENT)
                 .extract().response();
 
         Response response = given()
@@ -234,6 +235,7 @@ public class CarteTests {
                 .when()
                 .get(basePath + carte.getId())
                 .then()
+                .statusCode(HttpStatus.SC_OK)
                 .extract().response();
 
         JSONObject jsonRes = new JSONObject(response.asString());
@@ -252,6 +254,7 @@ public class CarteTests {
                 .when()
                 .post(basePath + carte.getId() + "/unsetContact")
                 .then()
+                .statusCode(HttpStatus.SC_NO_CONTENT)
                 .extract().response();
 
         Response response = given()
@@ -259,6 +262,7 @@ public class CarteTests {
                 .when()
                 .get(basePath + carte.getId())
                 .then()
+                .statusCode(HttpStatus.SC_OK)
                 .extract().response();
 
         JSONObject jsonRes = new JSONObject(response.asString());
@@ -278,6 +282,7 @@ public class CarteTests {
                 .when()
                 .post(basePath + carte.getId() + "/setPlafond")
                 .then()
+                .statusCode(HttpStatus.SC_NO_CONTENT)
                 .extract().response();
 
         Response response = given()
@@ -285,6 +290,7 @@ public class CarteTests {
                 .when()
                 .get(basePath + carte.getId())
                 .then()
+                .statusCode(HttpStatus.SC_OK)
                 .extract().response();
 
         JSONObject jsonRes = new JSONObject(response.asString());
